@@ -1,0 +1,12 @@
+*~
+._*
+.DS_Store
+.idea
+.vscode
+.sts4-cache
+node_modules
+bower_components
+typings
+npm-debug.log
+*.sublime-workspace
+dev/secrets

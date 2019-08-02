@@ -1,0 +1,53 @@
+#!/usr/bin/env bash
+
+# kubectl
+_kpow() {
+  local SEARCH=${1:-'/'}
+  kubectl get po -owide --field-selector status.phase!=Succeeded | grep $SEARCH
+}
+
+kapow() {
+  local SEARCH=${1:-'/'}
+  kubectl get po -owide | grep $SEARCH
+}
+
+kpodversions() {
+  kubectl get pods --field-selector status.phase!=Succeeded -ojson | { echo "NAMESPACE,NAME,NODE,STATUS,CONTAINER,IMAGE,TAG"; jq -r -c '.items[] | {namespace: .metadata.namespace, name: .metadata.name, node: .spec.nodeName, status: .status.phase, data: .spec.containers[]} | {namespace: .namespace, name: .name, node: .node, status: .status, container: [.data.name,.data.image|split(":")[0]] | join(","), tag: .data.image|split(":")[1] } | [.namespace, .name, .node, .status, .container, .tag ] | @csv'; } | column -t -s,
+}
+
+kapodversions() {
+  kubectl get pods -ojson | { echo "NAMESPACE,NAME,NODE,STATUS,CONTAINER,IMAGE,TAG"; jq -r -c '.items[] | {namespace: .metadata.namespace, name: .metadata.name, node: .spec.nodeName, status: .status.phase, data: .spec.containers[]} | {namespace: .namespace, name: .name, node: .node, status: .status, container: [.data.name,.data.image|split(":")[0]] | join(","), tag: .data.image|split(":")[1] } | [.namespace, .name, .node, .status, .container, .tag ] | @csv'; } | column -t -s,
+}
+
+kapodvershort() {
+  kubectl get pods -ojson | { echo "NAME,CONTAINER,TAG"; jq -r -c '.items[] | {name: .metadata.name, data: .spec.containers[]} | {name: .name, container: .data.name, tag: .data.image|split(":")[1] } | [.name, .container, .tag ] | @csv'; } | column -t -s,
+}
+
+kcleanup() {
+  for x in $(kubectl get namespace -o=custom-columns=name:'{.metadata.name}' | tail -n +2); do for y in $(kubectl -n $x get po --field-selector=status.phase=Failed -oname); do kubectl delete -n $x $y; done; done
+}
+
+# port forward to a service. need service name and ports
+kforward() {
+    local SERVICE=${1}
+    local LOCAL_PORT=${2}
+    local REMOTE_PORT=${3}
+    local POD=$(kubectl get po | grep $SERVICE | awk '{print $1}')
+    [ -z "$REMOTE_PORT" ] && REMOTE_PORT=$LOCAL_PORT
+    echo "forwarding $POD to $LOCAL_PORT"
+    kubectl port-forward $POD $LOCAL_PORT:$REMOTE_PORT
+}
+
+ministart() {
+  minikube start --disk-size "80g" --memory 10240 && \
+  # shellcheck disable=SC2046
+  eval $(minikube docker-env) && \
+  source $HOME/dev/secrets/minisetup.sh
+}
+
+minidie() {
+  # shellcheck disable=SC2046
+  eval $(minikube docker-env -u) && \
+  minikube delete && \
+  rm $HOME/Library/VirtualBox/HostInterfaceNetworking-vboxnet1-Dhcpd.leases
+}

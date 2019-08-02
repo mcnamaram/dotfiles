@@ -1,0 +1,24 @@
+{
+  "ignore_whitespace": ["begin", "end"],
+  "view": {
+    //set to true if you want to display line numbers (they may not be corresponding
+    //with original file lines due to expanded diff regions)
+    "line_numbers": true,
+
+    //set to true if you want lines to wrap on words (this is not recommended due to
+    //readability reasons)
+    "word_wrap": false,
+
+    //set to false if you don't want to highlight corresponding lines
+    "highlight_line": false,
+
+    //set to 'all' to display white space characters always, 'selection' to display
+    //only when selection is applied
+    "draw_white_space": "selection"
+  },
+  //Set to true if you want the first diff region to be automatically selected
+  "auto_select_first": true,
+
+  //Set to false if you don't want to automatically "jump" to the next change after merge
+  "go_to_next_after_merge": true
+}

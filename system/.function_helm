@@ -1,0 +1,21 @@
+#!/usr/bin/env bash
+
+function helmdel {
+  local release=$(helm list | grep $1 | cut -f1 | xargs)
+  local chart=$(helm list | grep $1 | cut -f5 | xargs)
+  echo "deleting $release for $chart"
+  helm delete --purge $release
+}
+
+function helmupg {
+  local release=$(helm list | grep $1 | cut -f1 | xargs)
+  local chart=$(helm list | grep $1 | cut -f5 | xargs)
+  if [ -z $release ]; then release=$1; fi # no existing release, this is now an install
+  shift
+  local path=$1
+  shift
+  local valuesPath=$1
+  shift
+  echo "handling $release for $chart in $path with $valuesPath and args: $@"
+  helm upgrade --install --recreate-pods $release "$path" -f "$valuesPath" "$@"
+}

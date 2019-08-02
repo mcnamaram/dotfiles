@@ -1,0 +1,70 @@
+{
+  "auto_find_in_selection": true,
+  "binary_file_patterns":
+  [
+    "*.dds",
+    "*.eot",
+    "*.gif",
+    "*.ico",
+    "*.jar",
+    "*.jpeg",
+    "*.jpg",
+    "*.pdf",
+    "*.png",
+    "*.postman_collection.json",
+    "*.swf",
+    "*.tga",
+    "*.ttf",
+    "*.zip",
+    "api/.idea/**",
+    "build/**",
+    "node_modules/**",
+    "reports/**"
+  ],
+  "bold_folder_labels": true,
+  "color_scheme": "Packages/Material Theme/schemes/Material-Theme-Darker.tmTheme",
+  "drag_text": false,
+  "enable_typescript_language_service": true,
+  "ensure_newline_at_eof_on_save": false,
+  "fade_fold_buttons": false,
+  "find_selected_text": true,
+  "font_face": "Monaco",
+  "font_size": 14,
+  "highlight_modified_tabs": true,
+  "ignored_packages":
+  [
+    "Vintage"
+  ],
+  "indent_guide_options":
+  [
+    "draw_normal",
+    "draw_active"
+  ],
+  "indent_to_bracket": true,
+  "index_exclude_patterns":
+  [
+    "*.log",
+    "node_modules/**"
+  ],
+  "line_padding_bottom": 1,
+  "material_theme_accent_blue": true,
+  "material_theme_arrow_folders": true,
+  "material_theme_compact_sidebar": true,
+  "material_theme_tabs_autowidth": true,
+  "material_theme_tabs_separator": true,
+  "node_path": "/Users/mmcnamara/.nvm/versions/node/v10.15.3/bin/node",
+  "open_files_in_new_window": false,
+  "remember_full_screen": true,
+  "rulers":
+  [
+    80
+  ],
+  "shift_tab_unindent": true,
+  "show_encoding": true,
+  "show_line_endings": true,
+  "tab_size": 2,
+  "theme": "Material-Theme-Palenight.sublime-theme",
+  "translate_tabs_to_spaces": true,
+  "trim_trailing_white_space_on_save": true,
+  "typescript_auto_format": false
+}

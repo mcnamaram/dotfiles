@@ -1,0 +1,246 @@
+[apply]
+
+  # Detect whitespace errors when applying a patch
+  whitespace = fix
+
+[core]
+  # Use custom `.gitignore` and `.gitattributes`
+  excludesfile = ~/.config/git/ignore
+  attributesfile = ~/.config/git/attributes
+  # TODO move to extras and parameterize to pick atom, code, or subl
+  editor = subl -n -w
+  filemode = false
+  # Make `git rebase` safer on macOS
+  # More info: <http://www.git-tower.com/blog/make-git-rebase-safe-on-osx/>
+  trustctime = false
+  autocrlf = input
+  untrackedCache = true
+  # pager = diff-so-fancy | less --tabs=4 -RFX
+
+[commit]
+  # https://help.github.com/articles/signing-commits-using-gpg/
+  # TODO I want to do this, but not just yet
+  gpgsign = false
+
+[credential]
+  helper = osxkeychain
+
+[grep]
+  lineNumber = true
+
+[help]
+  # Automatically correct and execute mistyped commands
+  autocorrect = 3
+
+[push]
+  # current 2.x default
+  default = simple
+  # Make `git push` push relevant annotated tags when pushing branches out.
+  followTags = true
+
+[fetch]
+  prune = true
+
+[pull]
+  rebase = true
+
+[status]
+  relativePaths = false
+  branch = true
+
+[rebase]
+  autosquash = true
+
+[sequence]
+  # TODO move to extras and parameterize to pick atom, code, or subl
+  editor = subl -n -w
+
+[alias]
+  # edit this file
+  configedit = config --global -e
+
+  ## Logging/status
+
+  # View abbreviated SHA, description, and history graph of the latest 20 commits
+  l = log --pretty=oneline -n 20 --graph --abbrev-commit
+
+  lc = log ORIG_HEAD.. --stat --no-merges
+  lg = log --graph --pretty=format:'%Cred%h%Creset -%C(yellow)%d%Creset %s %Cgreen(%cr) %C(bold blue)<%an>%Creset' --abbrev-commit --date=relative
+
+  # what was the last logged commit
+  last = log -l HEAD
+
+  # View the current working tree status using the short format
+  s = status -s
+
+  # make the bad go away
+  hardreset = reset HEAD --hard
+
+  # Show the diff between the latest commit and the current state
+  changes = !"git diff-index --quiet HEAD -- || clear; git diff --patch-with-stat"
+
+  # `git changesn $number` shows the diff between the state `$number` revisions ago and the current state
+  changesn = !"f() { git diff --patch-with-stat HEAD~$1; }; git diff-index --quiet HEAD -- || clear; f"
+
+  # check out what changed in the last two commits; ignores current state
+  review = diff HEAD^ HEAD
+
+  br = branch
+
+  # Show verbose output about tags, branches or remotes
+  tags = tag -l
+  branches = branch -a
+  remotes = remote -v
+
+  # List aliases
+  aliases = config --get-regexp alias
+  alias = !"git aliases"
+
+  ## fetching/pulling
+
+  # Fetch and prune
+  f = fetch
+
+  ## fetch and prune tags
+  pt = !git tag -l | xargs git tag -d && git fetch -t
+
+  # Pull in remote changes for the current repository and all its submodules
+  p = !"git pull; git submodule foreach git pull origin master"
+  all = !git stash && git fetch && git pull && git stash pop
+
+  # Clone a repository including all submodules
+  c = clone --recursive
+
+  co = checkout
+  cob = checkout -b
+
+  ## committing/pushing
+
+  # who doesn't like a dad joke?
+  dad = !curl https://icanhazdadjoke.com/ && git add
+
+  # commit with a message
+  ci = commit -m
+
+  # commit with funny message - never use at work!!
+  comic = "!f() { git commit -m \"$(curl -s http://whatthecommit.com/index.txt)\"; }; f"
+
+  # Commit all changes and mark as WIP
+  wip = "!w() { git add -A && git commit -m \"[ci skip][SQ] $(curl -s http://whatthecommit.com/index.txt)\"; }; w"
+
+  # Amend the currently staged files to the latest commit
+  amend = commit -a --amend --reuse-message=HEAD
+
+  # Credit an author on the latest commit
+  credit = "!f() { git commit --amend --author \"$1 <$2>\" -C HEAD; }; f"
+
+  # Interactive rebase with the given number of latest commits
+  squash = "!r() { git rebase -i HEAD~$1; }; r"
+
+  ra = rebase --abort
+  rc = rebase --continue
+  rs = rebase --skip
+
+  # Remove the old tag with this name and tag the latest commit with it.
+  retag = "!r() { git tag -d $1 && git push origin :refs/tags/$1 && git tag $1; }; r"
+
+  # Remove branches that have already been merged with develop
+  # a.k.a. ‘delete merged’
+  dm = "!f() { git branch --merged ${1-develop} | grep -v " ${1-develop}$" | gxargs -rpn1 git branch -d; }; f"
+
+  # remove other branches
+  bd = "!git branch -d $1 && echo '' && git branch -l && echo '  (Removed) $1'"
+  bdf = "!git branch -D $1 && echo '' && git branch -l && echo '  (RemoveD) $1'"
+
+  # short push
+  pu = push
+  pun = push --no-verify
+  puta = push --follow-tags
+
+  # short push --force
+  puf = push --force-with-lease
+  pufn = push --force-with-lease --no-verify
+
+  ## searching
+
+  # Find branches containing commit
+  fb = "!f() { git branch -a --contains $1; }; f"
+
+  # Find tags containing commit
+  ft = "!f() { git describe --always --contains $1; }; f"
+
+  # Find commits by source code
+  fc = "!f() { git log --pretty=format:'%C(yellow)%h  %Cblue%ad  %Creset%s%Cgreen  [%cn] %Cred%d' --decorate --date=short -S$1; }; f"
+
+  # Find commits by commit message
+  fm = "!f() { git log --pretty=format:'%C(yellow)%h  %Cblue%ad  %Creset%s%Cgreen  [%cn] %Cred%d' --decorate --date=short --grep=$1; }; f"
+
+  # List contributors with number of commits
+  contrib = shortlog --summary --numbered
+
+[diff]
+  # Detect copies as well as renames
+  renames = copies
+  # Enable an experimental heuristic that shifts the hunk boundary in an
+  # attempt to make the resulting patch easier to read.
+  indentHeuristic = true
+
+  # super awesome patdiff for terminal views
+  # TODO check how this plays with stow
+  external = ~/.config/git/git-external_patdiff.sh
+
+  # use 'i' and 'w' for index and working tree instead of 'a' and 'b'
+  mnemonicprefix = true
+
+  # TODO move to extra to pick the tool (e.g. atom v. subl)
+  tool = sublimerge
+[diff "sopsdiffer"]
+  textconv = sops -d
+[diff "bin"]
+  # Use `hexdump` to diff binary files
+  textconv = hexdump -v -C
+
+# TODO move next few sections to extra to pick the tool (e.g. atom v. subl)
+[difftool]
+  prompt = false
+[difftool "sublimerge"]
+  cmd = subl \"$REMOTE\" \"$LOCAL\" --command \"sublimerge_diff_views {\\\"left_read_only\\\": true, \\\"right_read_only\\\": true, \\\"full_screen\\\": true}\"
+
+[merge]
+  tool = sublimerge
+  conflictstyle = diff3
+  defaultToUpstream = true
+  # ANTI-TODO keep this here, don't move to extra
+  # Include summaries of merged commits in newly created merge commit messages
+  log = true
+
+[mergetool]
+  prompt = false
+[mergetool "sublimerge"]
+  cmd = subl -n -w \"$REMOTE\" \"$BASE\" \"$LOCAL\" \"$MERGED\" --command \"sublimerge_diff_views {\\\"full_screen\\\": true}\"
+  trustExitCode = false
+
+[color]
+  # Use colors in Git commands that are capable of colored output when
+  # outputting to the terminal. (This is the default setting in Git ≥ 1.8.4.)
+  ui = auto
+
+  interactive = true
+[color "branch"]
+  current = yellow reverse
+  local = yellow
+  remote = green
+[color "diff"]
+  meta = yellow bold
+  frag = magenta bold # line info
+  old = red # deletions
+  new = green # additions
+[color "status"]
+  added = yellow
+  changed = green
+  untracked = cyan
+[color "diff-highlight"]
+  oldNormal = red bold
+  oldHighlight = red bold 52
+  newNormal = green bold
+  newHighlight = green bold 22

@@ -1,0 +1,119 @@
+#!/usr/bin/env bash
+
+# Enable aliases to be sudo’ed
+alias sudo='sudo '
+
+# Easier navigation: .., ..., ...., ....., ~ and -
+alias ..='cd ..'
+alias ...='cd ../..'
+alias ....='cd ../../..'
+alias .....='cd ../../../..'
+alias cd.='cd $(readlink -f .)'    # Go to real dir (i.e. if current dir is linked)
+
+alias ls='ls -A'
+alias l='ls -CF'
+alias ll='ls -alho'
+alias lf='ls -F1ltr'
+alias mv='mv -iv'
+alias cp='cp -iv'
+alias h='history'
+
+alias tree="tree -A"
+alias treed="tree -d"
+alias tree1="tree -d -L 1"
+alias tree2="tree -d -L 2"
+
+# Network
+alias ping='ping -c 4'
+alias ports='netstat -tulanp'
+alias ip="dig +short myip.opendns.com @resolver1.opendns.com"
+alias ipl="ifconfig | grep -Eo 'inet (addr:)?([0-9]*\.){3}[0-9]*' | grep -Eo '([0-9]*\.){3}[0-9]*' | grep -v '127.0.0.1'"
+# Show active network interfaces
+alias ifactive="ifconfig | pcregrep -M -o '^[^\t:]+:([^\n]|\n\t)*status: active'"
+
+# View HTTP traffic
+alias sniff="sudo ngrep -d 'en1' -t '^(GET|POST) ' 'tcp and port 80'"
+alias httpdump="sudo tcpdump -i en1 -n -s 0 -w - | grep -a -o -E \"Host\: .*|GET \/.*\""
+
+alias igrep='grep -i'
+alias psgrep="psgrep -i"
+alias json="json -c"
+alias grip="grip -b"
+
+alias watch='watch '
+alias intellij='open /Applications/IntelliJ\ IDEA\ CE.app/ '
+alias addfire='/usr/libexec/ApplicationFirewall/socketfilterfw --add '
+
+
+# Can't spell
+alias eixt='exit'
+alias gits='git s'
+alias gitp='git p'
+alias gitlg='git lg'
+alias gitl='git l'
+alias fit='git fetch -p'
+
+# minify common commands
+alias bashedit='subl -n ~/.profile'
+alias basheditalias='subl -n ~/.alias'
+alias basheditfunctions='subl -n ~/.functions'
+alias bashsource='source ~/.profile'
+alias funcalias='cat ~/.functions'
+alias hosts="sudo $EDITOR /etc/hosts"
+
+# list functions and paths
+alias functions="declare -f | grep '^[a-z].* ()' | sed 's/{$//'"
+alias paths='echo -e ${PATH//:/\\n}'
+
+alias crontime='echo "$(date -u -v "+2M" +"%M %H") * * *"'
+
+# Request using GET, POST, etc. method
+
+for METHOD in GET HEAD POST PUT DELETE TRACE OPTIONS; do
+  alias "$METHOD"="lwp-request -m '$METHOD'"
+done
+unset METHOD
+
+# npm
+
+alias ni="npm install"
+alias nu="npm uninstall"
+alias nup="npm update"
+alias nri="rm -r node_modules && npm install"
+alias ncu="npm-check -su"
+
+# docker
+alias dmdefault="eval \"\$(docker-machine env default)\""
+alias dockerstopps="docker stop \$(docker ps -qf status=running)"
+alias dockerwipeps="docker rm \$(docker ps -aq -f status=exited)"
+alias dockerwipeimages="docker rmi \$(docker images --format '{{.Repository}}:{{.Tag}}')"
+alias dockerwipenone="docker rmi \$(docker images -qf 'dangling=true')"
+alias dockerwipe="dockerstopps; dockerwipeps; dockerwipenone; dockerwipeimages"
+alias dockercmd='docker inspect -f "{{.Name}} {{.Config.Cmd}}" $(docker ps -q)'
+alias dockerips='docker inspect -f "{{.Name}} {{.NetworkSettings.IPAddress}}" $(docker ps -q)'
+
+alias dcomp='docker-compose'
+
+# kube
+alias kpow='_kpow '
+
+# minikube
+alias minienv='eval $(minikube docker-env)'
+alias deminienv='eval $(minikube docker-env -u)'
+
+# gradle
+alias g='./gradlew -Djava.net.preferIPv4Stack=true '
+alias gbuild='g clean build'
+alias gsb='gbuild spotlessApply'
+alias gsbi='gbuild spotlessApply integrationTest'
+alias gsbd='gsb buildDocker'
+alias gsbid='gsbi buildDocker'
+alias grun='g bootRun'
+alias gbrun='gbuild bootRun'
+
+# python
+alias pyupdateall="pip install --upgrade pip && pip freeze --local | grep -v '^\-e' | cut -d = -f 1  | xargs -n1 pip install -U"
+
+# bash functions
+# shellcheck source=/dev/null
+test -e "${HOME}/.functions" && source "${HOME}/.functions"

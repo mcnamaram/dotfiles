@@ -25,7 +25,7 @@ PATH="$DOTFILES_DIR/bin:$PATH"
 
 # Source the dotfiles (order matters)
 
-for DOTFILE in "$DOTFILES_DIR"/system/.{env,function,function_*,path,alias,grep,prompt,nvm,completion,fasd,iterm,jabba,opam,pyenv,secrets}; do
+for DOTFILE in "$DOTFILES_DIR"/system/.{env,function,function_*,path,alias,grep,completion,prompt,nvm,fasd,iterm,jabba,opam,pyenv,secrets}; do
   [ -f "$DOTFILE" ] && . "$DOTFILE"
 done
 
@@ -59,3 +59,5 @@ rm /usr/local/bin/node && ln -s $(nvm which $(nvm current)) /usr/local/bin/node
 # Export
 
 export DOTFILES_DIR DOTFILES_EXTRA_DIR
+
+[ -s "/Users/mcnamaram2/.jabba/jabba.sh" ] && source "/Users/mcnamaram2/.jabba/jabba.sh"

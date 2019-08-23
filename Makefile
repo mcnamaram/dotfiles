@@ -31,7 +31,7 @@ sudo:
 	sudo -v
 	while true; do sudo -n true; sleep 60; kill -0 "$$" || exit; done 2>/dev/null &
 
-packages: brew-packages jabba-jdk cask-apps node-packages gems python-packages
+packages: brew-packages jabba-jdk cask-apps node-packages gems python-packages opam
 
 link: stow-$(OS)
 	for FILE in $$(\ls -A runcom); do if [ -f $(HOME)/$$FILE -a ! -h $(HOME)/$$FILE ]; then mv -v $(HOME)/$$FILE{,.bak}; fi; done
@@ -56,7 +56,7 @@ git: brew
 	brew install git git-extras
 
 jabba:
-	is-executable jabba || curl -fsSL https://github.com/shyiko/jabba/raw/master/install.sh | bash && . $(HOME)/.jabba/jabba.sh
+	curl -sL https://github.com/shyiko/jabba/raw/master/install.sh | bash && . ~/.jabba/jabba.sh
 
 npm:
 	if ! [ -d $(NVM_DIR)/.git ]; then git clone https://github.com/creationix/nvm.git $(NVM_DIR); fi
@@ -77,12 +77,8 @@ jabba-jdk: jabba
 
 cask-apps: brew
 	brew bundle --file=$(DOTFILES_DIR)/install/Caskfile
-	for EXT in $$(cat install/Codefile); do code --install-extension $$EXT; done
-	is-executable alfred && brew cask alfred link
-	if is-executable subl; then
-		curl -fsSL "https://packagecontrol.io/Package%20Control.sublime-package" > "$(HOME)/Library/Application Support/Sublime Text 3/Installed Packages/Package Control.sublime-package"
-		cp $(DOTFILES_DIR)/install/sublime-text/*.sublime-settings "$(HOME)/Library/Application Support/Sublime Text 3/Packages/User/"
-	fi
+	#for EXT in $$(cat install/Codefile); do code --install-extension $$EXT; done
+	#if is-executable subl; then curl -fsSL "https://packagecontrol.io/Package%20Control.sublime-package" > "$(HOME)/Library/Application Support/Sublime Text 3/Installed Packages/Package Control.sublime-package" && cp $(DOTFILES_DIR)/install/sublime-text/*.sublime-settings "$(HOME)/Library/Application Support/Sublime Text 3/Packages/User/";	fi
 
 node-packages: npm
 	. $(NVM_DIR)/nvm.sh; npm install -g $(shell cat install/npmfile)
@@ -92,6 +88,11 @@ gems: ruby
 
 python-packages: python
 	pip install -r install/requirements.txt
+
+opam:
+	opam init
+	opam update
+	opam install patdiff
 
 test:
 	bats test/*.bats

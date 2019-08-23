@@ -8,8 +8,6 @@ _bash_prompt_config() {
   local HOST_SYMBOL="\h"
   local ESC_OPEN="\["
   local ESC_CLOSE="\]"
-  local TIME12H="\T"
-  local PATHSHORT="\w"
 
   if tput setaf >/dev/null 2>&1 ; then
     _setaf () { tput setaf "$1" ; }
@@ -76,6 +74,8 @@ bash_prompt_command() {
   local TRUNC_SYMBOL=".."
   local DIR=${PWD##*/}
   local P_PWD=${PWD/#$HOME/\~}
+  local TIME12H="\T"
+  local PATHSHORT="\w"
 
   MAXLENGTH=$(( ( MAXLENGTH < ${#DIR} ) ? ${#DIR} : MAXLENGTH ))
 
@@ -101,22 +101,22 @@ bash_prompt_command() {
     P_EXIT+="${P_RED}✘ "
   fi
 
-  PS1="${P_EXIT}${P_BGREEN}${TIME12H}${P_BLUEB}${P_KUBE}${P_GIT} ${P_YELLOW}${P_PWD}${P_YELLOW} ❯ ${P_RESET}"
+  PS1="${P_EXIT}${P_BGREEN}${TIME12H}${P_BLUEB}${P_KUBE}${P_GIT}${P_RESET}"
 }
 
 parse_git_branch() {
   local OUT=$(git branch &>/dev/null;
     if [ $? -eq 0 ]; then
-      echo "$(echo `git status` | grep "nothing to commit" > /dev/null 2>&1;
-      if [ "$?" -eq "0" ]; then
-        echo "'${P_GREEN}'"$(__git_ps1 " (%s)");
-      else
-        echo "'${P_BRED}'"$(__git_ps1 " {%s}");
-      fi) '${P_YELLOWB}${PATHSHORT}${P_BLUEB}' \$ "'${P_RESET}';
+      echo "$(echo $(git status) | grep "nothing to commit" > /dev/null 2>&1;
+        if [ "$?" -eq "0" ]; then
+          echo "${P_GREEN}"$(__git_ps1 "(%s)");
+        else
+          echo "${P_BRED}"$(__git_ps1 "{%s}");
+        fi) ${P_YELLOWB}${PATHSHORT}${P_BLUEB} \$ ";
     else
-      echo " '${P_YELLOW}${PATHSHORT}${P_BLUEB}' \$ "'${P_RESET}';
+      echo "${P_YELLOW}${PATHSHORT}${P_BLUEB} \$ ";
     fi)
-  if [ "$OUT" != "" ]; then echo " $OUT"; fi
+  if [ "$OUT" != "" ]; then echo "$OUT"; fi
 }
 
 parse_kube_context() {

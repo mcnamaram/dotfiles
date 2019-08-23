@@ -4,9 +4,48 @@
 
 if is-executable brew; then
   BREW_PREFIX=$(brew --prefix)
-  BASH_COMPLETION="$BREW_PREFIX/share/bash-completion/bash_completion"
-  . "$BASH_COMPLETION"
-  unset BREW_PREFIX BASH_COMPLETION
+
+  if [ -f "$BREW_PREFIX/etc/bash_completion.d/aws_bash_completer" ]; then
+    source "$BREW_PREFIX/etc/bash_completion.d/aws_bash_completer"
+  fi
+  if [ -f "$BREW_PREFIX/etc/bash_completion.d/brew" ]; then
+    source "$BREW_PREFIX/etc/bash_completion.d/brew"
+  fi
+  if [ -f "$BREW_PREFIX/etc/bash_completion.d/complete.sh" ]; then
+    source "$BREW_PREFIX/etc/bash_completion.d/complete.sh"
+  fi
+  if [ -f "$BREW_PREFIX/etc/bash_completion.d/docker" ]; then
+    source "$BREW_PREFIX/etc/bash_completion.d/docker"
+  fi
+  if [ -f "$BREW_PREFIX/etc/bash_completion.d/docker-compose" ]; then
+    source "$BREW_PREFIX/etc/bash_completion.d/docker-compose"
+  fi
+  if [ -f "$BREW_PREFIX/etc/bash_completion.d/git-completion.bash" ]; then
+    source "$BREW_PREFIX/etc/bash_completion.d/git-completion.bash"
+  fi
+  if [ -f "$BREW_PREFIX/etc/bash_completion.d/git-extras" ]; then
+    source "$BREW_PREFIX/etc/bash_completion.d/git-extras"
+  fi
+  if [ -f "$BREW_PREFIX/etc/bash_completion.d/git-prompt.sh" ]; then
+    source "$BREW_PREFIX/etc/bash_completion.d/git-prompt.sh"
+  fi
+  if [ -f "$BREW_PREFIX/etc/bash_completion.d/kubectx" ]; then
+    source "$BREW_PREFIX/etc/bash_completion.d/kubectx"
+  fi
+  if [ -f "$BREW_PREFIX/etc/bash_completion.d/kubens" ]; then
+    source "$BREW_PREFIX/etc/bash_completion.d/kubens"
+  fi
+  if [ -f "$BREW_PREFIX/etc/bash_completion.d/pandoc" ]; then
+    source "$BREW_PREFIX/etc/bash_completion.d/pandoc"
+  fi
+  if [ -f "$BREW_PREFIX/etc/bash_completion.d/prlctl" ]; then
+    source "$BREW_PREFIX/etc/bash_completion.d/prlctl"
+  fi
+  if [ -f "$BREW_PREFIX/etc/bash_completion.d/prlsrvctl" ]; then
+    source "$BREW_PREFIX/etc/bash_completion.d/prlsrvctl"
+  fi
+  source "$BREW_PREFIX/share/bash-completion/bash_completion"
+  unset BREW_PREFIX
 fi
 
 # Dotfiles

@@ -1,6 +1,7 @@
 * text=auto*.php text
 *.png binary
 *.jpg binary
+*.pdf binary
 composer.lock -diff
 yarn.lock -diff
 public/build/js/*.js -diff

@@ -6,3 +6,5 @@
 
 # else
 source $HOME/.bash_profile;
+
+[ -s "/Users/mcnamaram2/.jabba/jabba.sh" ] && source "/Users/mcnamaram2/.jabba/jabba.sh"

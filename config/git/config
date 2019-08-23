@@ -13,7 +13,6 @@
   # Make `git rebase` safer on macOS
   # More info: <http://www.git-tower.com/blog/make-git-rebase-safe-on-osx/>
   trustctime = false
-  autocrlf = input
   untrackedCache = true
   # pager = diff-so-fancy | less --tabs=4 -RFX
 
@@ -105,7 +104,7 @@
   pt = !git tag -l | xargs git tag -d && git fetch -t
 
   # Pull in remote changes for the current repository and all its submodules
-  p = !"git pull; git submodule foreach git pull origin master"
+  p = !"git pull; git submodule update --recursive --remote"
   all = !git stash && git fetch && git pull && git stash pop
 
   # Clone a repository including all submodules
@@ -244,3 +243,6 @@
   oldHighlight = red bold 52
   newNormal = green bold
   newHighlight = green bold 22
+[user]
+	name = Michael McNamara
+	email = mcnamaram2@upmc.edu

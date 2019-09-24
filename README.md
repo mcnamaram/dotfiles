@@ -4,7 +4,7 @@
 ## Package overview
 
 - [Homebrew](https://brew.sh) (packages: [Brewfile](./install/Brewfile))
-- [homebrew-cask](https://caskroom.github.io) (packages: [Caskfile](./install/Caskfile))
+- [homebrew-cask](https://formulae.brew.sh/cask/) (packages: [Caskfile](./install/Caskfile))
 - [Node.js + npm LTS](https://nodejs.org/en/download/) (packages: [npmfile](./install/npmfile))
 - Latest Ruby (packages: [Gemfile](./install/Gemfile))
 - Latest Git, Bash 4, Python 3, GNU coreutils, curl

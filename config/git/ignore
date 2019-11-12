@@ -10,3 +10,4 @@ typings
 npm-debug.log
 *.sublime-workspace
 dev/secrets
+**/gradlew.bat

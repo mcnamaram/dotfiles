@@ -1,4 +1,6 @@
-* text=auto*.php text
+* text=auto
+*.php text
+*.bat binary
 *.png binary
 *.jpg binary
 *.pdf binary

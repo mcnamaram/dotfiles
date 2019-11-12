@@ -10,10 +10,10 @@ alias ....='cd ../../..'
 alias .....='cd ../../../..'
 alias cd.='cd $(readlink -f .)'    # Go to real dir (i.e. if current dir is linked)
 
-alias ls='ls -A'
-alias l='ls -CF'
-alias ll='ls -alho'
-alias lf='ls -F1ltr'
+alias ls='ls -A --color'
+alias l='ls -CF --color'
+alias ll='ls -alho --color'
+alias lf='ls -F1ltr --color'
 alias mv='mv -iv'
 alias cp='cp -iv'
 alias h='history'
@@ -54,11 +54,11 @@ alias gitl='git l'
 alias fit='git fetch -p'
 
 # minify common commands
-alias bashedit='subl -n ~/.profile'
-alias basheditalias='subl -n ~/.alias'
-alias basheditfunctions='subl -n ~/.functions'
-alias bashsource='source ~/.profile'
-alias funcalias='cat ~/.functions'
+alias bashedit='subl -n ~/.dotfiles/runcom/.bash_profile'
+alias basheditalias='subl -n ~/.dotfiles/system/.alias'
+alias basheditfunctions='subl -n ~/.dotfiles/system/.function'
+alias bashsource='source ~/.dotfiles/runcom/.bash_profile'
+alias funcalias='cat ~/.dotfiles/system/.function'
 alias hosts="sudo $EDITOR /etc/hosts"
 
 # list functions and paths
@@ -106,8 +106,8 @@ alias g='./gradlew -Djava.net.preferIPv4Stack=true '
 alias gbuild='g clean build'
 alias gsb='gbuild spotlessApply'
 alias gsbi='gbuild spotlessApply integrationTest'
-alias gsbd='gsb buildDocker'
-alias gsbid='gsbi buildDocker'
+alias gsbd='gsb dockerTag'
+alias gsbid='gsbi dockerTag'
 alias grun='g bootRun'
 alias gbrun='gbuild bootRun'
 

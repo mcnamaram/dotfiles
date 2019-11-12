@@ -51,6 +51,14 @@ bash: BASH=/usr/local/bin/bash
 bash: SHELLS=/private/etc/shells
 bash: brew
 	if ! grep -q $(BASH) $(SHELLS); then brew install bash bash-completion@2 pcre pcre2 && sudo append $(BASH) $(SHELLS) && chsh -s $(BASH); fi
+	if [ $(command -v kubectx) ]; then
+	  brew unlink kubectx
+	  version=$(brew info kubectx --json | jq -r '.[].versions.stable')
+	  ln -s /usr/local/Cellar/kubectx/$version/bin/kubectx /usr/local/bin/kctx
+	  ln -s /usr/local/Cellar/kubectx/$version/bin/kubens /usr/local/bin/kns
+	  ln -s /usr/local/Cellar/kubectx/$version/etc/bash_completion.d/kubectx /usr/local/etc/bash_completion.d/kubectx
+	  ln -s /usr/local/Cellar/kubectx/$version/etc/bash_completion.d/kubens /usr/local/etc/bash_completion.d/kubens
+	fi
 
 git: brew
 	brew install git git-extras

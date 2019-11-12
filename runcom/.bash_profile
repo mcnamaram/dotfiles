@@ -61,3 +61,6 @@ rm /usr/local/bin/node && ln -s $(nvm which $(nvm current)) /usr/local/bin/node
 export DOTFILES_DIR DOTFILES_EXTRA_DIR
 
 [ -s "/Users/mcnamaram2/.jabba/jabba.sh" ] && source "/Users/mcnamaram2/.jabba/jabba.sh"
+
+test -e "${HOME}/.iterm2_shell_integration.bash" && source "${HOME}/.iterm2_shell_integration.bash"
+

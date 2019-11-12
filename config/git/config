@@ -13,6 +13,7 @@
   # Make `git rebase` safer on macOS
   # More info: <http://www.git-tower.com/blog/make-git-rebase-safe-on-osx/>
   trustctime = false
+  autocrlf = input
   untrackedCache = true
   # pager = diff-so-fancy | less --tabs=4 -RFX
 
@@ -48,7 +49,9 @@
   branch = true
 
 [rebase]
-  autosquash = true
+  autostash = true
+  abbreviatecommands = true
+  stat = true
 
 [sequence]
   # TODO move to extras and parameterize to pick atom, code, or subl
@@ -122,30 +125,30 @@
   ci = commit -m
 
   # commit with funny message - never use at work!!
-  comic = "!f() { git commit -m \"$(curl -s http://whatthecommit.com/index.txt)\"; }; f"
+  comic = "!comic() { git commit -m \"$(curl -s http://whatthecommit.com/index.txt)\"; }; comic"
 
   # Commit all changes and mark as WIP
-  wip = "!w() { git add -A && git commit -m \"[ci skip][SQ] $(curl -s http://whatthecommit.com/index.txt)\"; }; w"
+  wip = "!wip() { git add -A && git commit -m \"[ci skip][SQ] $(curl -s http://whatthecommit.com/index.txt)\"; }; wip"
 
   # Amend the currently staged files to the latest commit
   amend = commit -a --amend --reuse-message=HEAD
 
   # Credit an author on the latest commit
-  credit = "!f() { git commit --amend --author \"$1 <$2>\" -C HEAD; }; f"
+  credit = "!credit() { git commit --amend --author \"$1 <$2>\" -C HEAD; }; credit"
 
   # Interactive rebase with the given number of latest commits
-  squash = "!r() { git rebase -i HEAD~$1; }; r"
+  squash = "!squash() { git rebase -i HEAD~$1; }; squash"
 
   ra = rebase --abort
   rc = rebase --continue
   rs = rebase --skip
 
   # Remove the old tag with this name and tag the latest commit with it.
-  retag = "!r() { git tag -d $1 && git push origin :refs/tags/$1 && git tag $1; }; r"
+  retag = "!retag() { git tag -d $1 && git push origin :refs/tags/$1 && git tag $1; }; retag"
 
   # Remove branches that have already been merged with develop
   # a.k.a. ‘delete merged’
-  dm = "!f() { git branch --merged ${1-develop} | grep -v " ${1-develop}$" | gxargs -rpn1 git branch -d; }; f"
+  dm = "!dm() { git branch --merged ${1-develop} | grep -v " ${1-develop}$" | gxargs -rpn1 git branch -d; }; dm"
 
   # remove other branches
   bd = "!git branch -d $1 && echo '' && git branch -l && echo '  (Removed) $1'"
@@ -163,16 +166,16 @@
   ## searching
 
   # Find branches containing commit
-  fb = "!f() { git branch -a --contains $1; }; f"
+  fb = "!fb() { git branch -a --contains $1; }; fb"
 
   # Find tags containing commit
-  ft = "!f() { git describe --always --contains $1; }; f"
+  ft = "!ft() { git describe --always --contains $1; }; ft"
 
   # Find commits by source code
-  fc = "!f() { git log --pretty=format:'%C(yellow)%h  %Cblue%ad  %Creset%s%Cgreen  [%cn] %Cred%d' --decorate --date=short -S$1; }; f"
+  fc = "!fc() { git log --pretty=format:'%C(yellow)%h  %Cblue%ad  %Creset%s%Cgreen  [%cn] %Cred%d' --decorate --date=short -S$1; }; fc"
 
   # Find commits by commit message
-  fm = "!f() { git log --pretty=format:'%C(yellow)%h  %Cblue%ad  %Creset%s%Cgreen  [%cn] %Cred%d' --decorate --date=short --grep=$1; }; f"
+  fm = "!fm() { git log --pretty=format:'%C(yellow)%h  %Cblue%ad  %Creset%s%Cgreen  [%cn] %Cred%d' --decorate --date=short --grep=$1; }; fm"
 
   # List contributors with number of commits
   contrib = shortlog --summary --numbered

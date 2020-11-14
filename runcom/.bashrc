@@ -7,4 +7,5 @@
 # else
 source $HOME/.bash_profile;
 
-[ -s "/Users/mcnamaram2/.jabba/jabba.sh" ] && source "/Users/mcnamaram2/.jabba/jabba.sh"
+# Add RVM to PATH for scripting. Make sure this is the last PATH variable change.
+export PATH="$PATH:$HOME/.rvm/bin"

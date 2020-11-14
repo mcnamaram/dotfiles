@@ -8,11 +8,21 @@ osascript -e 'tell application "System Preferences" to quit'
 sudo -v
 
 # Keep-alive: update existing `sudo` time stamp until this script has finished
-while true; do sudo -n true; sleep 60; kill -0 "$$" || exit; done 2>/dev/null &
+while true; do sudo -n true; sleep 240; kill -0 "$$" || exit; done 2>/dev/null &
+
+# Add Terminal as a developer tool.
+# Source: an Apple Xcode engineer at: https://news.ycombinator.com/item?id=23278629
+sudo spctl developer-mode enable-terminal
 
 ###############################################################################
 # General UI/UX                                                               #
 ###############################################################################
+
+# Increase limit of open files.
+sudo tee -a /etc/sysctl.conf <<-EOF
+kern.maxfiles=20480
+kern.maxfilesperproc=18000
+EOF
 
 # Set language and text formats
 # Note: if you’re in the US, replace `EUR` with `USD`, `Centimeters` with
@@ -518,9 +528,6 @@ defaults write com.apple.Safari IncludeInternalDebugMenu -bool true
 # Make Safari’s search banners default to Contains instead of Starts With
 defaults write com.apple.Safari FindOnPageMatchesWordStartsOnly -bool false
 
-# Remove useless icons from Safari’s bookmarks bar
-defaults write com.apple.Safari ProxiesInBookmarksBar '\(\)'
-
 # Enable the Develop menu and the Web Inspector in Safari
 defaults write com.apple.Safari IncludeDevelopMenu -bool true
 defaults write com.apple.Safari WebKitDeveloperExtrasEnabledPreferenceKey -bool true
@@ -576,9 +583,6 @@ defaults write com.apple.ActivityMonitor SortDirection -int 0
 
 # Prevent Time Machine from prompting to use new hard drives as backup volume
 defaults write com.apple.TimeMachine DoNotOfferNewDisksForBackup -bool true
-
-# Disable local Time Machine backups
-hash tmutil &> /dev/null && sudo tmutil disablelocal
 
 ###############################################################################
 # Dashboard, TextEdit, and Disk Utility                   #

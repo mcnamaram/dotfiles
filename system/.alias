@@ -74,16 +74,7 @@ for METHOD in GET HEAD POST PUT DELETE TRACE OPTIONS; do
 done
 unset METHOD
 
-# npm
-
-alias ni="npm install"
-alias nu="npm uninstall"
-alias nup="npm update"
-alias nri="rm -r node_modules && npm install"
-alias ncu="npm-check -su"
-
 # docker
-alias dmdefault="eval \"\$(docker-machine env default)\""
 alias dockerstopps="docker stop \$(docker ps -qf status=running)"
 alias dockerwipeps="docker rm \$(docker ps -aq -f status=exited)"
 alias dockerwipeimages="docker rmi \$(docker images --format '{{.Repository}}:{{.Tag}}')"
@@ -104,10 +95,6 @@ alias deminienv='eval $(minikube docker-env -u)'
 # gradle
 alias g='./gradlew -Djava.net.preferIPv4Stack=true '
 alias gbuild='g clean build'
-alias gsb='gbuild spotlessApply'
-alias gsbi='gbuild spotlessApply integrationTest'
-alias gsbd='gsb dockerTag'
-alias gsbid='gsbi dockerTag'
 alias grun='g bootRun'
 alias gbrun='gbuild bootRun'
 

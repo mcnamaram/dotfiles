@@ -1,5 +1,15 @@
 #!/usr/bin/env bash
 
+# open file descriptor 5 such that anything written to /dev/fd/5
+# is piped through ts and then to /tmp/timestamps
+# exec 5> >(ts -i "%.s" >> /tmp/timestamps)
+
+# https://www.gnu.org/software/bash/manual/html_node/Bash-Variables.html
+# export BASH_XTRACEFD="5"
+
+# Enable tracing
+# set -x
+
 # If not running interactively, don't do anything
 
 [ -z "$PS1" ] && return
@@ -25,7 +35,7 @@ PATH="$DOTFILES_DIR/bin:$PATH"
 
 # Source the dotfiles (order matters)
 
-for DOTFILE in "$DOTFILES_DIR"/system/.{env,function,function_*,path,alias,grep,completion,prompt,nvm,fasd,iterm,jabba,opam,pyenv,secrets}; do
+for DOTFILE in "$DOTFILES_DIR"/system/.{env,function,function_*,path,alias,grep,completion,prompt,nvm,iterm,jabba,opam,pyenv,rvm,secrets}; do
   [ -f "$DOTFILE" ] && . "$DOTFILE"
 done
 
@@ -54,13 +64,9 @@ rm -rf $(which kubectl.docker)
 unset READLINK CURRENT_SCRIPT SCRIPT_PATH DOTFILE EXTRAFILE
 
 # make sublime work
-rm /usr/local/bin/node && ln -s $(nvm which $(nvm current)) /usr/local/bin/node
+test -e /usr/local/bin/node && rm /usr/local/bin/node
+ln -s $(nvm which $(nvm current)) /usr/local/bin/node
 
 # Export
 
 export DOTFILES_DIR DOTFILES_EXTRA_DIR
-
-[ -s "/Users/mcnamaram2/.jabba/jabba.sh" ] && source "/Users/mcnamaram2/.jabba/jabba.sh"
-
-test -e "${HOME}/.iterm2_shell_integration.bash" && source "${HOME}/.iterm2_shell_integration.bash"
-

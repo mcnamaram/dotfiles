@@ -23,6 +23,8 @@ prepend-path "/usr/sbin"
 prepend-path "/usr/local/sbin"
 prepend-path "$GOPATH"
 prepend-path "$GOBIN"
+prepend-path "$PYENVBIN"
+prepend-path "$POETRYBIN"
 
 # Remove duplicates (preserving prepended items)
 # Source: http://unix.stackexchange.com/a/40755

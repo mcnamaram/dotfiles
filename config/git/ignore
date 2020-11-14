@@ -11,3 +11,5 @@ npm-debug.log
 *.sublime-workspace
 dev/secrets
 **/gradlew.bat
+.metals
+dc-local.yml

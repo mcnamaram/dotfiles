@@ -1,4 +1,5 @@
 # mcnamaram's dotfiles
+
 > (originally forked from [Mathias’s dotfiles](https://mths.be/dotfiles)) and revamped with ideas from [webpro/dotfiles](https://github.com/webpro/dotfiles)
 
 ## Package overview
@@ -7,8 +8,7 @@
 - [homebrew-cask](https://formulae.brew.sh/cask/) (packages: [Caskfile](./install/Caskfile))
 - [Node.js + npm LTS](https://nodejs.org/en/download/) (packages: [npmfile](./install/npmfile))
 - Latest Ruby (packages: [Gemfile](./install/Gemfile))
-- Latest Git, Bash 4, Python 3, GNU coreutils, curl
-- [Mackup](https://github.com/lra/mackup) (sync application settings)
+- Latest Git, Bash, Python 3, GNU coreutils, curl
 - `$EDITOR` (and Git editor) is [Sublime Text 3](https://www.sublimetext.com/)
 
 ## Installation
@@ -16,9 +16,10 @@
 This targets macOS but with some apt-get should be fine for \*nix.
 
 **Warning:** Don’t blindly use these settings. Always review the code and understand what you are getting into. Check these references for help:
-  * Lars Kappert [Getting Started With Dotfiles](https://medium.com/@webprolific/getting-started-with-dotfiles-43c3602fd789)
-  * Thoughtbot [Intro to Dotfiles](https://thoughtbot.com/upcase/videos/intro-to-dotfiles)
-  * ArchWiki [Dotfiles](https://wiki.archlinux.org/index.php/Dotfiles)
+
+    * Lars Kappert [Getting Started With Dotfiles](https://medium.com/@webprolific/getting-started-with-dotfiles-43c3602fd789)
+    * Thoughtbot [Intro to Dotfiles](https://thoughtbot.com/upcase/videos/intro-to-dotfiles)
+    * ArchWiki [Dotfiles](https://wiki.archlinux.org/index.php/Dotfiles)
 
 _Use at your own risk!_  And please, _please_, triple check to not check in api-keys, passwords, and anything else sensitive that might linger in your configs.
 
@@ -47,16 +48,14 @@ Alternatively, you can have an additional, personal dotfiles repo at `~/.extra`.
 
 My `~/.extra/runcom/custom.sh` looks something like this:
 
-```bash
-# Git credentials
-# Not in the repository, to prevent people from accidentally committing under my name
-GIT_AUTHOR_NAME="Michael McNamara"
-GIT_COMMITTER_NAME="$GIT_AUTHOR_NAME"
-git config --global user.name "$GIT_AUTHOR_NAME"
-GIT_AUTHOR_EMAIL="mcnamaram@example.com"
-GIT_COMMITTER_EMAIL="$GIT_AUTHOR_EMAIL"
-git config --global user.email "$GIT_AUTHOR_EMAIL"
-```
+    # Git credentials
+    # Not in the repository, to prevent people from accidentally committing under my name
+    GIT_AUTHOR_NAME="Michael McNamara"
+    GIT_COMMITTER_NAME="$GIT_AUTHOR_NAME"
+    git config --global user.name "$GIT_AUTHOR_NAME"
+    GIT_AUTHOR_EMAIL="mcnamaram@example.com"
+    GIT_COMMITTER_EMAIL="$GIT_AUTHOR_EMAIL"
+    git config --global user.email "$GIT_AUTHOR_EMAIL"
 
 You could also use `~/.extra/runcom` scripts to override settings, functions, and aliases from my dotfiles repository. It’s probably better to [fork this repository](https://github.com/mcnamaram/dotfiles/fork) instead, though.
 
@@ -68,10 +67,6 @@ You can put your custom secret settings, such as Git credentials in the `system/
 
 - `dotfiles dock` (set [Dock items](./macos/dock.sh))
 - `dotfiles macos` (set [macOS defaults](./macos/defaults.sh))
-- Mackup
-  - Log in to Dropbox (and wait until synced)
-  - `ln -s ~/.config/mackup/.mackup.cfg ~` (until [#632](https://github.com/lra/mackup/pull/632) is fixed)
-  - `mackup restore`
 
 ## The `dotfiles` command
 

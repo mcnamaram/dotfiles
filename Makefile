@@ -14,7 +14,7 @@ macos: sudo core-macos packages link
 
 linux: core-linux link
 
-core-macos: brew bash git npm ruby python
+core-macos: brew bash git jabba npm ruby python
 
 core-linux:
 	apt-get update
@@ -29,9 +29,9 @@ stow-linux: core-linux
 
 sudo:
 	sudo -v
-	while true; do sudo -n true; sleep 60; kill -0 "$$" || exit; done 2>/dev/null &
+	while true; do sudo -n true; sleep 240; kill -0 "$$" || exit; done 2>/dev/null &
 
-packages: brew-packages jabba-jdk cask-apps node-packages gems python-packages opam
+packages: brew-packages jabba-jdk cask-apps node-packages gems python-packages opam aws
 
 link: stow-$(OS)
 	for FILE in $$(\ls -A runcom); do if [ -f $(HOME)/$$FILE -a ! -h $(HOME)/$$FILE ]; then mv -v $(HOME)/$$FILE{,.bak}; fi; done
@@ -51,17 +51,9 @@ bash: BASH=/usr/local/bin/bash
 bash: SHELLS=/private/etc/shells
 bash: brew
 	if ! grep -q $(BASH) $(SHELLS); then brew install bash bash-completion@2 pcre pcre2 && sudo append $(BASH) $(SHELLS) && chsh -s $(BASH); fi
-	if [ $(command -v kubectx) ]; then
-	  brew unlink kubectx
-	  version=$(brew info kubectx --json | jq -r '.[].versions.stable')
-	  ln -s /usr/local/Cellar/kubectx/$version/bin/kubectx /usr/local/bin/kctx
-	  ln -s /usr/local/Cellar/kubectx/$version/bin/kubens /usr/local/bin/kns
-	  ln -s /usr/local/Cellar/kubectx/$version/etc/bash_completion.d/kubectx /usr/local/etc/bash_completion.d/kubectx
-	  ln -s /usr/local/Cellar/kubectx/$version/etc/bash_completion.d/kubens /usr/local/etc/bash_completion.d/kubens
-	fi
 
 git: brew
-	brew install git git-extras
+	brew install git
 
 jabba:
 	curl -sL https://github.com/shyiko/jabba/raw/master/install.sh | bash && . ~/.jabba/jabba.sh
@@ -74,25 +66,37 @@ ruby: brew
 	brew install ruby
 
 python: brew
-	brew install python
+	brew install python@3.9
 
 brew-packages: brew
-	brew bundle --file=$(DOTFILES_DIR)/install/Brewfile
+	brew bundle --file=$(DOTFILES_DIR)install/Brewfile
+	if [ is-executable kubectx ]; then
+		brew unlink kubectx
+		version=$$(brew info kubectx --json | jq -r '.[].versions.stable')
+		ln -s /usr/local/Cellar/kubectx/$$version/bin/kubectx /usr/local/bin/kctx
+		ln -s /usr/local/Cellar/kubectx/$$version/bin/kubens /usr/local/bin/kns
+		ln -s /usr/local/Cellar/kubectx/$$version/etc/bash_completion.d/kubectx /usr/local/etc/bash_completion.d/kubectx
+		ln -s /usr/local/Cellar/kubectx/$$version/etc/bash_completion.d/kubens /usr/local/etc/bash_completion.d/kubens
+	fim
 
 jabba-jdk: jabba
-	jabba install zulu@1.8
-	jabba alias default 1.8
+	$(shell . ~/.jabba/jabba.sh && jabba install zulu@1.8 && jabba use zulu@1.8 && jabba alias default zulu@1.8)
 
 cask-apps: brew
-	brew bundle --file=$(DOTFILES_DIR)/install/Caskfile
-	#for EXT in $$(cat install/Codefile); do code --install-extension $$EXT; done
-	#if is-executable subl; then curl -fsSL "https://packagecontrol.io/Package%20Control.sublime-package" > "$(HOME)/Library/Application Support/Sublime Text 3/Installed Packages/Package Control.sublime-package" && cp $(DOTFILES_DIR)/install/sublime-text/*.sublime-settings "$(HOME)/Library/Application Support/Sublime Text 3/Packages/User/";	fi
+	brew bundle --file=$(DOTFILES_DIR)install/Caskfile
+	if [ is-executable code ]; then
+		for EXT in $$(cat install/Codefile); do code --install-extension $$EXT; done
+	fi
+	if [ is-executable subl ]; then
+		curl -fsSL "https://packagecontrol.io/Package%20Control.sublime-package" > "$(HOME)/Library/Application Support/Sublime Text 3/Installed Packages/Package Control.sublime-package"
+		cp $(DOTFILES_DIR)/install/sublime-text/*.sublime-settings "$(HOME)/Library/Application Support/Sublime Text 3/Packages/User/"
+	fi
 
 node-packages: npm
 	. $(NVM_DIR)/nvm.sh; npm install -g $(shell cat install/npmfile)
 
 gems: ruby
-	export PATH="/usr/local/opt/ruby/bin:$PATH"; gem install $(shell cat install/Gemfile)
+	export PATH="/usr/local/opt/ruby/bin:$(PATH)"; gem install $(shell cat install/Gemfile)
 
 python-packages: python
 	pip install -r install/requirements.txt

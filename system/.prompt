@@ -23,33 +23,33 @@ _bash_prompt_config() {
   fi
 
   # Normal colors
-  local BLACK="${ESC_OPEN}$(_setaf 0)${ESC_CLOSE}"
+  # local BLACK="${ESC_OPEN}$(_setaf 0)${ESC_CLOSE}"
   local RED="${ESC_OPEN}$(_setaf 1)${ESC_CLOSE}"
   local GREEN="${ESC_OPEN}$(_setaf 2)${ESC_CLOSE}"
   local YELLOW="${ESC_OPEN}$(_setaf 3)${ESC_CLOSE}"
-  local BLUE="${ESC_OPEN}$(_setaf 4)${ESC_CLOSE}"
-  local VIOLET="${ESC_OPEN}$(_setaf 5)${ESC_CLOSE}"
+  # local BLUE="${ESC_OPEN}$(_setaf 4)${ESC_CLOSE}"
+  # local VIOLET="${ESC_OPEN}$(_setaf 5)${ESC_CLOSE}"
   local CYAN="${ESC_OPEN}$(_setaf 6)${ESC_CLOSE}"
   local WHITE="${ESC_OPEN}$(_setaf 7)${ESC_CLOSE}"
 
   # Bright colors
   local BRIGHT_RED="${ESC_OPEN}$(_setaf 9)${ESC_CLOSE}"
   local BRIGHT_GREEN="${ESC_OPEN}$(_setaf 10)${ESC_CLOSE}"
-  local BRIGHT_YELLOW="${ESC_OPEN}$(_setaf 11)${ESC_CLOSE}"
-  local BRIGHT_BLUE="${ESC_OPEN}$(_setaf 12)${ESC_CLOSE}"
-  local BRIGHT_VIOLET="${ESC_OPEN}$(_setaf 13)${ESC_CLOSE}"
-  local BRIGHT_CYAN="${ESC_OPEN}$(_setaf 14)${ESC_CLOSE}"
-  local BRIGHT_WHITE="${ESC_OPEN}$(_setaf 15)${ESC_CLOSE}"
+  # local BRIGHT_YELLOW="${ESC_OPEN}$(_setaf 11)${ESC_CLOSE}"
+  # local BRIGHT_BLUE="${ESC_OPEN}$(_setaf 12)${ESC_CLOSE}"
+  # local BRIGHT_VIOLET="${ESC_OPEN}$(_setaf 13)${ESC_CLOSE}"
+  # local BRIGHT_CYAN="${ESC_OPEN}$(_setaf 14)${ESC_CLOSE}"
+  # local BRIGHT_WHITE="${ESC_OPEN}$(_setaf 15)${ESC_CLOSE}"
 
   # Bold colors
-  local BLACK_BOLD="${ESC_OPEN}${BOLD}$(_setaf 0)${ESC_CLOSE}"
-  local RED_BOLD="${ESC_OPEN}${BOLD}$(_setaf 1)${ESC_CLOSE}"
-  local GREEN_BOLD="${ESC_OPEN}${BOLD}$(_setaf 2)${ESC_CLOSE}"
+  # local BLACK_BOLD="${ESC_OPEN}${BOLD}$(_setaf 0)${ESC_CLOSE}"
+  # local RED_BOLD="${ESC_OPEN}${BOLD}$(_setaf 1)${ESC_CLOSE}"
+  # local GREEN_BOLD="${ESC_OPEN}${BOLD}$(_setaf 2)${ESC_CLOSE}"
   local YELLOW_BOLD="${ESC_OPEN}${BOLD}$(_setaf 3)${ESC_CLOSE}"
   local BLUE_BOLD="${ESC_OPEN}${BOLD}$(_setaf 4)${ESC_CLOSE}"
-  local VIOLET_BOLD="${ESC_OPEN}${BOLD}$(_setaf 5)${ESC_CLOSE}"
-  local CYAN_BOLD="${ESC_OPEN}${BOLD}$(_setaf 6)${ESC_CLOSE}"
-  local WHITE_BOLD="${ESC_OPEN}${BOLD}$(_setaf 7)${ESC_CLOSE}"
+  # local VIOLET_BOLD="${ESC_OPEN}${BOLD}$(_setaf 5)${ESC_CLOSE}"
+  # local CYAN_BOLD="${ESC_OPEN}${BOLD}$(_setaf 6)${ESC_CLOSE}"
+  # local WHITE_BOLD="${ESC_OPEN}${BOLD}$(_setaf 7)${ESC_CLOSE}"
 
   # Expose the variables we need in prompt command
   P_USER=${BRIGHT_GREEN}${USER_SYMBOL}
@@ -63,7 +63,6 @@ _bash_prompt_config() {
   P_YELLOWB=${YELLOW_BOLD}
   P_RED=${RED}
   P_RESET=${RESET}
-
 }
 
 bash_prompt_command() {
@@ -120,7 +119,7 @@ parse_git_branch() {
 }
 
 parse_kube_context() {
-  local OUT=$(kubectl config current-context)
+  local OUT=$(kubectl config current-context 2> /dev/null)
   if [ "$OUT" != "" ]; then echo " - $OUT - "; fi
 }
 

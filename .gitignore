@@ -1,2 +1,8 @@
 system/.secrets
-**/karabiner/automatic_backups
+config/karabiner/automatic_backups
+config/pgcli/history
+config/pgcli/log
+config/pip/pip.conf
+install/Brewfile.lock.json
+# too many secret stuffs
+system/.function_aws

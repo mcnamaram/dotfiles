@@ -128,7 +128,7 @@
   comic = "!comic() { git commit -m \"$(curl -s http://whatthecommit.com/index.txt)\"; }; comic"
 
   # Commit all changes and mark as WIP
-  wip = "!wip() { git add -A && git commit -m \"[ci skip][SQ] $(curl -s http://whatthecommit.com/index.txt)\"; }; wip"
+  wip = "!wip() { git add -A && git commit -m \"wip(squash): $(curl -s http://whatthecommit.com/index.txt)\" --no-verify; }; wip"
 
   # Amend the currently staged files to the latest commit
   amend = commit -a --amend --reuse-message=HEAD
@@ -248,4 +248,4 @@
   newHighlight = green bold 22
 [user]
 	name = Michael McNamara
-	email = mcnamaram2@upmc.edu
+	email = mike.mcnamara@arcadia.io

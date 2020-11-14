@@ -39,7 +39,7 @@ kforward() {
 }
 
 ministart() {
-  minikube start --disk-size "80g" --memory 10240 && \
+  minikube start --disk-size='80g' --memory='10g' --cpus=4 && \
   # shellcheck disable=SC2046
   eval $(minikube docker-env) && \
   source $HOME/dev/secrets/minisetup.sh

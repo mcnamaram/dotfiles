@@ -65,6 +65,8 @@ You can put your custom secret settings, such as Git credentials in the `system/
 
 ## Post-install
 
+Open a new shell and run:
+
 - `dotfiles dock` (set [Dock items](./macos/dock.sh))
 - `dotfiles macos` (set [macOS defaults](./macos/defaults.sh))
 

@@ -70,27 +70,30 @@ python: brew
 
 brew-packages: brew
 	brew bundle --file=$(DOTFILES_DIR)install/Brewfile
-	if [ is-executable kubectx ]; then
-		brew unlink kubectx
-		version=$$(brew info kubectx --json | jq -r '.[].versions.stable')
-		ln -s /usr/local/Cellar/kubectx/$$version/bin/kubectx /usr/local/bin/kctx
-		ln -s /usr/local/Cellar/kubectx/$$version/bin/kubens /usr/local/bin/kns
-		ln -s /usr/local/Cellar/kubectx/$$version/etc/bash_completion.d/kubectx /usr/local/etc/bash_completion.d/kubectx
-		ln -s /usr/local/Cellar/kubectx/$$version/etc/bash_completion.d/kubens /usr/local/etc/bash_completion.d/kubens
-	fim
+	@-is-executable kubectx && ( \
+	  rm -f /usr/local/bin/kctx; \
+	  rm -f /usr/local/bin/kns; \
+	  brew unlink kubectx; \
+	  version=$$(brew info kubectx --json | jq -r '.[].versions.stable'); \
+	  ln -s /usr/local/Cellar/kubectx/$$version/bin/kubectx /usr/local/bin/kctx; \
+	  ln -s /usr/local/Cellar/kubectx/$$version/bin/kubens /usr/local/bin/kns; \
+	  ln -s /usr/local/Cellar/kubectx/$$version/etc/bash_completion.d/kubectx /usr/local/etc/bash_completion.d/kubectx; \
+	  ln -s /usr/local/Cellar/kubectx/$$version/etc/bash_completion.d/kubens /usr/local/etc/bash_completion.d/kubens; \
+	)
 
 jabba-jdk: jabba
 	$(shell . ~/.jabba/jabba.sh && jabba install zulu@1.8 && jabba use zulu@1.8 && jabba alias default zulu@1.8)
 
 cask-apps: brew
-	brew bundle --file=$(DOTFILES_DIR)install/Caskfile
-	if [ is-executable code ]; then
-		for EXT in $$(cat install/Codefile); do code --install-extension $$EXT; done
-	fi
-	if [ is-executable subl ]; then
-		curl -fsSL "https://packagecontrol.io/Package%20Control.sublime-package" > "$(HOME)/Library/Application Support/Sublime Text 3/Installed Packages/Package Control.sublime-package"
-		cp $(DOTFILES_DIR)/install/sublime-text/*.sublime-settings "$(HOME)/Library/Application Support/Sublime Text 3/Packages/User/"
-	fi
+	-brew bundle --file=$(DOTFILES_DIR)install/Caskfile
+	@-is-executable code && for EXT in $$(cat install/Codefile); do code --install-extension $$EXT; done
+	@-is-executable subl && ( \
+		rm -rf "$(HOME)/Library/Application Support/Sublime Text 3/Packages/User"; \
+		mkdir -p "$(HOME)/Library/Application Support/Sublime Text 3/Installed Packages/"; \
+		mkdir -p "$(HOME)/Library/Application Support/Sublime Text 3/Packages/"; \
+		curl -fsSL "https://packagecontrol.io/Package%20Control.sublime-package" > "$(HOME)/Library/Application Support/Sublime Text 3/Installed Packages/Package Control.sublime-package"; \
+		ln -s $(DOTFILES_DIR)config/sublime-text/ "$(HOME)/Library/Application Support/Sublime Text 3/Packages/User"; \
+	)
 
 node-packages: npm
 	. $(NVM_DIR)/nvm.sh; npm install -g $(shell cat install/npmfile)
@@ -99,12 +102,16 @@ gems: ruby
 	export PATH="/usr/local/opt/ruby/bin:$(PATH)"; gem install $(shell cat install/Gemfile)
 
 python-packages: python
-	pip install -r install/requirements.txt
+	pip3 install -r install/requirements.txt
 
 opam:
-	opam init
+	opam init -n
 	opam update
-	opam install patdiff
+	opam install patdiff -y
+
+aws: brew
+	is-executable aws || brew install awscli
+	brew link --overwrite awscli
 
 test:
 	bats test/*.bats

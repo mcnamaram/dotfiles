@@ -1,15 +1,105 @@
-*~
-._*
+# OS generated files #
+######################
 .DS_Store
+.DS_Store?
+._*
+.Trashes
+Thumbs.db
+ehthumbs.db
+Desktop.ini
+$RECYCLE.BIN/
+.AppleDouble
+.LSOverride
+
+# Directories for system files #
+######################
+.cache
+.Trash
+.fseventsd
+.Spotlight-V100
+.TemporaryItems
+.VolumeIcon.icns
+
+# Editor and IDE files #
+######################
+*~
+*.sublime-workspace
 .idea
 .vscode
+.idea/
+.vscode/
 .sts4-cache
+*.iml
+*.log
+*.swp
+*.swo
+*.bak
+*.pid
+*.seed
+*.pid.lock
+
+# Node/JavaScript #
+######################
 node_modules
 bower_components
+node_modules/
+bower_components/
 typings
 npm-debug.log
-*.sublime-workspace
-dev/secrets
-**/gradlew.bat
-.metals
+yarn-debug.log*
+yarn-error.log*
+
+# Logs and database #
+######################
+logs
+*.sqlite
+*.sqlite3
+*.db
+
+# Compiled source #
+######################
+*.com
+*.class
+*.dll
+*.exe
+*.o
+*.so
+*.pyc
+*.pyo
+*.pyd
+*.out
+
+# tmp files #
+######################
+*.tmp
+*.temp
+tmp/
+temp/
+.tmp/
+
+# Build directories #
+######################
+dist
+tmp
+temp
+out
+target
+build
+
+# Scratch #
+######################
+dev/scratch
+
+# Docker #
+######################
 dc-local.yml
+
+# Other #
+######################
+.metals
+coverage/
+*.lock
+.sass-cache/
+.cache/
+*.backup
+.*~lock~

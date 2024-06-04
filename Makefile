@@ -10,11 +10,11 @@ export STOW_DIR := $(DOTFILES_DIR)
 
 all: $(OS)
 
-macos: sudo core-macos packages link
+macos: sudo core-macos packages link set-default-shell
 
-linux: core-linux link
+linux: core-linux link set-default-shell
 
-core-macos: brew bash git jabba npm ruby python
+core-macos: brew bash git jabba nvm ruby python zsh
 
 core-linux:
 	apt-get update
@@ -31,7 +31,7 @@ sudo:
 	sudo -v
 	while true; do sudo -n true; sleep 240; kill -0 "$$" || exit; done 2>/dev/null &
 
-packages: brew-packages jabba-jdk cask-apps node-packages gems python-packages opam aws
+packages: brew-packages jabba-jdk code-exts subl-inst node-packages gems python-packages aws
 
 link: stow-$(OS)
 	for FILE in $$(\ls -A runcom); do if [ -f $(HOME)/$$FILE -a ! -h $(HOME)/$$FILE ]; then mv -v $(HOME)/$$FILE{,.bak}; fi; done
@@ -45,20 +45,33 @@ unlink: stow-$(OS)
 	for FILE in $$(\ls -A runcom); do if [ -f $(HOME)/$$FILE.bak ]; then mv -v $(HOME)/$$FILE.bak $(HOME)/$${FILE%%.bak}; fi; done
 
 brew:
-	is-executable brew || curl -fsSL https://raw.githubusercontent.com/Homebrew/install/master/install | ruby
+	is-executable brew || /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/master/install.sh)"
 
 bash: BASH=/usr/local/bin/bash
 bash: SHELLS=/private/etc/shells
 bash: brew
-	if ! grep -q $(BASH) $(SHELLS); then brew install bash bash-completion@2 pcre pcre2 && sudo append $(BASH) $(SHELLS) && chsh -s $(BASH); fi
+	if ! grep -q $(BASH) $(SHELLS); then brew install bash bash-completion@2 pcre pcre2 && sudo tee -a $(SHELLS) <<<$(BASH); fi
+
+zsh: ZSH=/usr/local/bin/zsh
+zsh: SHELLS=/private/etc/shells
+zsh: brew
+	if ! grep -q $(ZSH) $(SHELLS); then brew install zsh zsh-completions pcre pcre2 && sudo tee -a $(SHELLS) <<<$(ZSH); fi
+
+set-default-shell: bash
+	@echo "Set bash as the default shell for the user"
+	chsh -s $(BASH)
 
 git: brew
 	brew install git
 
 jabba:
-	curl -sL https://github.com/shyiko/jabba/raw/master/install.sh | bash && . ~/.jabba/jabba.sh
+	curl -sL https://github.com/shyiko/jabba/raw/master/install.sh | bash && source ~/.jabba/jabba.sh
 
-npm:
+iterm2:
+	curl -L https://iterm2.com/shell_integration/bash -o ~/.iterm2_shell_integration.bash && source ~/.iterm2_shell_integration.bash
+	# curl -L https://iterm2.com/shell_integration/zsh -o ~/.iterm2_shell_integration.zsh && source ~/.iterm2_shell_integration.zsh
+
+nvm:
 	if ! [ -d $(NVM_DIR)/.git ]; then git clone https://github.com/creationix/nvm.git $(NVM_DIR); fi
 	. $(NVM_DIR)/nvm.sh; nvm install --lts --latest-npm
 
@@ -66,7 +79,7 @@ ruby: brew
 	brew install ruby
 
 python: brew
-	brew install python@3.9
+	brew install python@3.12
 
 brew-packages: brew
 	brew bundle --file=$(DOTFILES_DIR)install/Brewfile
@@ -82,11 +95,21 @@ brew-packages: brew
 	)
 
 jabba-jdk: jabba
-	$(shell . ~/.jabba/jabba.sh && jabba install zulu@1.8 && jabba use zulu@1.8 && jabba alias default zulu@1.8)
+	$(shell . ~/.jabba/jabba.sh && \
+	jdk_ver=$$(jabba ls-remote --latest major | grep zulu) && \
+	jabba install $$jdk_ver && \
+	jabba use $$jdk_ver && \
+	jabba alias default $$jdk_ver)
 
-cask-apps: brew
-	-brew bundle --file=$(DOTFILES_DIR)install/Caskfile
-	@-is-executable code && for EXT in $$(cat install/Codefile); do code --install-extension $$EXT; done
+code-exts: brew
+	@-is-executable code && for EXT in $$(cat install/Codefile); do \
+		if ! code --install-extension $$EXT; then \
+			curl -sSL "https://marketplace.visualstudio.com/_apis/public/gallery/publishers/$${EXT%%.*}/vsextensions/$${EXT##*.}/latest/vspackage" -o "$${EXT}.vsix"; \
+			code --install-extension "$${EXT}.vsix"; \
+		fi; \
+	done
+
+subl-inst: brew
 	@-is-executable subl && ( \
 		rm -rf "$(HOME)/Library/Application Support/Sublime Text 3/Packages/User"; \
 		mkdir -p "$(HOME)/Library/Application Support/Sublime Text 3/Installed Packages/"; \
@@ -95,19 +118,14 @@ cask-apps: brew
 		ln -s $(DOTFILES_DIR)config/sublime-text/ "$(HOME)/Library/Application Support/Sublime Text 3/Packages/User"; \
 	)
 
-node-packages: npm
-	. $(NVM_DIR)/nvm.sh; npm install -g $(shell cat install/npmfile)
+node-packages: nvm
+	. $(NVM_DIR)/nvm.sh; npm install --location global $(shell cat install/npmfile)
 
 gems: ruby
 	export PATH="/usr/local/opt/ruby/bin:$(PATH)"; gem install $(shell cat install/Gemfile)
 
 python-packages: python
 	pip3 install -r install/requirements.txt
-
-opam:
-	opam init -n
-	opam update
-	opam install patdiff -y
 
 aws: brew
 	is-executable aws || brew install awscli

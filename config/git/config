@@ -8,14 +8,15 @@
   excludesfile = ~/.config/git/ignore
   attributesfile = ~/.config/git/attributes
   # TODO move to extras and parameterize to pick atom, code, or subl
-  editor = subl -n -w
+  editor = code --wait
   filemode = false
+  whitespace = trailing-space,space-before-tab,tab-in-indent,cr-at-eol
   # Make `git rebase` safer on macOS
   # More info: <http://www.git-tower.com/blog/make-git-rebase-safe-on-osx/>
   trustctime = false
   autocrlf = input
   untrackedCache = true
-  # pager = diff-so-fancy | less --tabs=4 -RFX
+  pager = delta --dark
 
 [commit]
   # https://help.github.com/articles/signing-commits-using-gpg/
@@ -42,7 +43,7 @@
   prune = true
 
 [pull]
-  rebase = true
+  rebase = merges
 
 [status]
   relativePaths = false
@@ -54,8 +55,7 @@
   stat = true
 
 [sequence]
-  # TODO move to extras and parameterize to pick atom, code, or subl
-  editor = subl -n -w
+  editor = code --wait
 
 [alias]
   # edit this file
@@ -124,9 +124,6 @@
   # commit with a message
   ci = commit -m
 
-  # commit with funny message - never use at work!!
-  comic = "!comic() { git commit -m \"$(curl -s http://whatthecommit.com/index.txt)\"; }; comic"
-
   # Commit all changes and mark as WIP
   wip = "!wip() { git add -A && git commit -m \"wip(squash): $(curl -s http://whatthecommit.com/index.txt)\" --no-verify; }; wip"
 
@@ -187,15 +184,9 @@
   # attempt to make the resulting patch easier to read.
   indentHeuristic = true
 
-  # super awesome patdiff for terminal views
-  # TODO check how this plays with stow
-  external = ~/.config/git/git-external_patdiff.sh
-
   # use 'i' and 'w' for index and working tree instead of 'a' and 'b'
   mnemonicprefix = true
-
-  # TODO move to extra to pick the tool (e.g. atom v. subl)
-  tool = sublimerge
+  tool = delta
 [diff "sopsdiffer"]
   textconv = sops -d
 [diff "bin"]
@@ -205,21 +196,20 @@
 # TODO move next few sections to extra to pick the tool (e.g. atom v. subl)
 [difftool]
   prompt = false
-[difftool "sublimerge"]
-  cmd = subl \"$REMOTE\" \"$LOCAL\" --command \"sublimerge_diff_views {\\\"left_read_only\\\": true, \\\"right_read_only\\\": true, \\\"full_screen\\\": true}\"
+[difftool "delta"]
+  cmd = delta --diff $LOCAL $REMOTE
 
 [merge]
-  tool = sublimerge
+  tool = code
   conflictstyle = diff3
   defaultToUpstream = true
-  # ANTI-TODO keep this here, don't move to extra
   # Include summaries of merged commits in newly created merge commit messages
   log = true
 
 [mergetool]
   prompt = false
-[mergetool "sublimerge"]
-  cmd = subl -n -w \"$REMOTE\" \"$BASE\" \"$LOCAL\" \"$MERGED\" --command \"sublimerge_diff_views {\\\"full_screen\\\": true}\"
+[mergetool "code"]
+  cmd = code --wait $MERGED
   trustExitCode = false
 
 [color]
@@ -249,3 +239,5 @@
 [user]
 	name = Michael McNamara
 	email = mike.mcnamara@arcadia.io
+[init]
+	defaultBranch = develop

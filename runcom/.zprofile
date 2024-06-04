@@ -1,4 +1,4 @@
-#!/usr/bin/env bash
+#!/usr/bin/env zsh
 
 # If not running interactively, don't do anything
 case "$-" in
@@ -7,6 +7,6 @@ case "$-" in
 esac
 
 # Source the .bashrc file if it exists
-if [ -f "$HOME/.bashrc" ]; then
-  source "$HOME/.bashrc"
+if [ -f "$HOME/.zshrc" ]; then
+  source "$HOME/.zshrc"
 fi

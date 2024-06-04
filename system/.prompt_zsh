@@ -1,0 +1,107 @@
+#!/usr/bin/env zsh
+# shellcheck shell=bash
+
+## Prompt Configuration
+if [ -n "$ZSH_VERSION" ]; then
+  _zsh_prompt_config() {
+    local USER_SYMBOL="%n"
+    local HOST_SYMBOL="%m"
+
+    if tput setaf >/dev/null 2>&1; then
+      _setaf() { tput setaf "$1"; }
+      local RESET="%{$(tput sgr0)%}"
+      local BOLD="%{$(tput bold)%}"
+    else
+      _setaf() { echo "\033[0;$(($1 + 30))m"; }
+      local RESET="%{\033[m%}"
+      local BOLD="%{\033[1m%}"
+    fi
+
+    local RED="%{$(_setaf 1)%}"
+    local GREEN="%{$(_setaf 2)%}"
+    local YELLOW="%{$(_setaf 3)%}"
+    local CYAN="%{$(_setaf 6)%}"
+    local WHITE="%{$(_setaf 7)%}"
+    local BRIGHT_RED="%{$(_setaf 9)%}"
+    local BRIGHT_GREEN="%{$(_setaf 10)%}"
+    local YELLOW_BOLD="%{$BOLD$(_setaf 3)%}"
+    local BLUE_BOLD="%{$BOLD$(_setaf 4)%}"
+
+    P_USER=${BRIGHT_GREEN}${USER_SYMBOL}
+    P_HOST=${CYAN}${HOST_SYMBOL}
+    P_WHITE=${WHITE}
+    P_GREEN=${GREEN}
+    P_BRED=${BRIGHT_RED}
+    P_BGREEN=${BRIGHT_GREEN}
+    P_BLUEB=${BLUE_BOLD}
+    P_YELLOW=${YELLOW}
+    P_YELLOWB=${YELLOW_BOLD}
+    P_RED=${RED}
+    P_RESET=${RESET}
+  }
+
+  # Function to cache Git branch and Kubernetes context
+  cache_prompt_info() {
+    _GIT_PROMPT=$(parse_git_branch)
+    _KUBE_PROMPT=$(parse_kube_context)
+  }
+
+  # Update prompt command
+  zsh_prompt_command() {
+    local EXIT_CODE=$?
+    local P_EXIT=""
+    local MAXLENGTH=35
+    local TRUNC_SYMBOL=".."
+    local DIR=${PWD##*/}
+    local P_PWD=${PWD/#$HOME/\~}
+    local TIME12H="%*"
+    local PATHSHORT="%~"
+
+    MAXLENGTH=$(((MAXLENGTH < ${#DIR}) ? ${#DIR} : MAXLENGTH))
+    local OFFSET=$((${#P_PWD} - MAXLENGTH))
+
+    if [ ${OFFSET} -gt 0 ]; then
+      P_PWD=${P_PWD:$OFFSET:$MAXLENGTH}
+      P_PWD=${TRUNC_SYMBOL}/${P_PWD#*/}
+    fi
+
+    if [[ $TERM == xterm* ]]; then
+      echo -ne "\033]0;${P_PWD}\007"
+    fi
+
+    if [[ $EXIT_CODE != 0 ]]; then
+      P_EXIT+="${P_RED}✘ "
+    fi
+
+    cache_prompt_info
+
+    PROMPT="${P_EXIT}${P_BGREEN}${TIME12H}${P_BLUEB}${_KUBE_PROMPT}${_GIT_PROMPT}${P_RESET} \$ "
+    RPROMPT="${P_USER}@${P_HOST} ${P_YELLOWB}${PATHSHORT}${P_BLUEB} \$ "
+  }
+
+  # Optimized Git branch parsing
+  parse_git_branch() {
+    local branch
+    if git rev-parse --is-inside-work-tree &>/dev/null; then
+      branch=$(git symbolic-ref --short HEAD 2>/dev/null || git describe --tags --exact-match 2>/dev/null)
+      if git diff --quiet 2>/dev/null >&2; then
+        echo "${P_GREEN}(${branch})"
+      else
+        echo "${P_BRED}{${branch}}"
+      fi
+    fi
+  }
+
+  # Optimized Kubernetes context parsing
+  parse_kube_context() {
+    local context=$(kubectl config current-context 2>/dev/null)
+    if [ -n "$context" ]; then
+      echo " - ${context} - "
+    fi
+  }
+
+  _zsh_prompt_config
+
+  # Bind the prompt command to zsh
+  precmd_functions+=(zsh_prompt_command)
+fi

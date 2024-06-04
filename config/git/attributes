@@ -1,12 +1,51 @@
+# Set default behavior to automatically normalize line endings
 * text=auto
+
+# Explicitly set text files
 *.php text
+*.js text
+*.html text
+*.css text
+*.scss text
+*.md text
+*.json text
+
+# Explicitly set binary files
 *.bat binary
+*.exe binary
+*.dll binary
+*.so binary
 *.png binary
 *.jpg binary
+*.jpeg binary
+*.gif binary
 *.pdf binary
+*.zip binary
+*.tar.gz binary
+*.rar binary
+*.7z binary
+*.mov binary
+*.mp4 binary
+
+# Ignore diffs for specific files
 composer.lock -diff
 yarn.lock -diff
 public/build/js/*.js -diff
 public/build/css/*.css -diff
+*.min.js -diff
+*.min.css -diff
 *.map -diff
+*.lock -diff
 rev-manifest.json -diff
+
+# Additional end-of-line normalization
+*.sh text eol=lf
+*.bat text eol=crlf
+*.ps1 text eol=crlf
+
+# Ensure these files are treated as text regardless of their extension
+.gitattributes text
+.gitignore text
+.editorconfig text
+.bashrc text
+.zshrc text

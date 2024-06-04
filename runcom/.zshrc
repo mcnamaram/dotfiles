@@ -1,4 +1,4 @@
-#!/usr/bin/env bash
+#!/usr/bin/env zsh
 
 # Resolve DOTFILES_DIR
 if [ -d "$HOME/.dotfiles" ]; then

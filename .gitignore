@@ -6,3 +6,6 @@ config/pip/pip.conf
 install/Brewfile.lock.json
 # too many secret stuffs
 system/.function_aws
+config/iterm2/AppSupport
+config/iterm2/sockets
+config/sublime-text/rbql_table_index_hex

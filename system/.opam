@@ -1,4 +1,0 @@
-#!/usr/bin/env bash
-
-# OPAM configuration - needed for patdiff
-test -e "${HOME}/.opam/opam-init/init.sh" && source "${HOME}/.opam/opam-init/init.sh"

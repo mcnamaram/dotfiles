@@ -22,20 +22,21 @@
 		"reports/**"
 	],
 	"bold_folder_labels": true,
-	"color_scheme": "Packages/Color Scheme - Default/Monokai.tmTheme",
+	"color_scheme": "Packages/Material Theme/schemes/Material-Theme-Darker.tmTheme",
 	"drag_text": false,
 	"enable_typescript_language_service": true,
 	"ensure_newline_at_eof_on_save": false,
 	"fade_fold_buttons": false,
 	"find_selected_text": true,
 	"font_face": "Monaco",
-	"font_size": 15,
+	"font_size": 11,
 	"highlight_modified_tabs": true,
 	"ignored_packages":
 	[
+		"DoxyDoxygen",
 		"MarkdownHighlighting",
-		"TypescriptCompletion",
-		"Vintage"
+		"rainbow_csv",
+		"Vintage",
 	],
 	"indent_guide_options":
 	[
@@ -65,8 +66,9 @@
 	"show_encoding": true,
 	"show_line_endings": true,
 	"tab_size": 2,
-	"theme": "Material-Theme-Palenight.sublime-theme",
+	"theme": "Material-Theme-Darker.sublime-theme",
 	"translate_tabs_to_spaces": true,
 	"trim_trailing_white_space_on_save": true,
-	"typescript_auto_format": false
+	"typescript_auto_format": false,
+	"word_wrap": "false",
 }

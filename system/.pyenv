@@ -1,3 +1,11 @@
 #!/usr/bin/env bash
 
-(which pyenv > /dev/null) && eval "$(pyenv init -)" && eval "$(pyenv virtualenv-init -)"
+# Set PYENV_ROOT if not already set
+export PYENV_ROOT="${PYENV_ROOT:-$HOME/.pyenv}"
+
+# Check if pyenv is installed and initialize it
+if is-executable pyenv; then
+  eval "$(pyenv init --path)"
+  eval "$(pyenv init -)"
+  eval "$(pyenv virtualenv-init -)"
+fi

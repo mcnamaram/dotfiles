@@ -1,4 +1,11 @@
 #!/usr/bin/env bash
 
-[ -s "$HOME/.jabba/jabba.sh" ] && source "$HOME/.jabba/jabba.sh"
-export JRE_HOME="$(dirname $(which java))"
+# Source jabba if it exists
+if [ -s "$HOME/.jabba/jabba.sh" ]; then
+  source "$HOME/.jabba/jabba.sh"
+fi
+
+# Set JRE_HOME
+if command -v java &>/dev/null; then
+  export JRE_HOME="$(dirname "$(dirname "$(readlink -f "$(which java)")")")"
+fi

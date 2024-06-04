@@ -1,0 +1,118 @@
+#!/usr/bin/env bash
+
+## Prompt Configuration
+if [ -n "$BASH_VERSION" ]; then
+  _bash_prompt_config() {
+    local USER_SYMBOL="\u"
+    local HOST_SYMBOL="\h"
+    local ESC_OPEN="\["
+    local ESC_CLOSE="\]"
+
+    if tput setaf >/dev/null 2>&1; then
+      _setaf() { tput setaf "$1"; }
+      local RESET="${ESC_OPEN}$({ tput sgr0 || tput me; } 2>/dev/null)${ESC_CLOSE}"
+      local BOLD="$({ tput bold || tput md; } 2>/dev/null)"
+    else
+      _setaf() { echo "\033[0;$(($1 + 30))m"; }
+      local RESET="\033[m"
+      local BOLD=""
+      ESC_OPEN=""
+      ESC_CLOSE=""
+    fi
+
+    # Normal colors
+    local RED="${ESC_OPEN}$(_setaf 1)${ESC_CLOSE}"
+    local GREEN="${ESC_OPEN}$(_setaf 2)${ESC_CLOSE}"
+    local YELLOW="${ESC_OPEN}$(_setaf 3)${ESC_CLOSE}"
+    local CYAN="${ESC_OPEN}$(_setaf 6)${ESC_CLOSE}"
+    local WHITE="${ESC_OPEN}$(_setaf 7)${ESC_CLOSE}"
+
+    # Bright colors
+    local BRIGHT_RED="${ESC_OPEN}$(_setaf 9)${ESC_CLOSE}"
+    local BRIGHT_GREEN="${ESC_OPEN}$(_setaf 10)${ESC_CLOSE}"
+
+    # Bold colors
+    local YELLOW_BOLD="${ESC_OPEN}${BOLD}$(_setaf 3)${ESC_CLOSE}"
+    local BLUE_BOLD="${ESC_OPEN}${BOLD}$(_setaf 4)${ESC_CLOSE}"
+
+    # Expose the variables we need in prompt command
+    P_USER=${BRIGHT_GREEN}${USER_SYMBOL}
+    P_HOST=${CYAN}${HOST_SYMBOL}
+    P_WHITE=${WHITE}
+    P_GREEN=${GREEN}
+    P_BRED=${BRIGHT_RED}
+    P_BGREEN=${BRIGHT_GREEN}
+    P_BLUEB=${BLUE_BOLD}
+    P_YELLOW=${YELLOW}
+    P_YELLOWB=${YELLOW_BOLD}
+    P_RED=${RED}
+    P_RESET=${RESET}
+  }
+
+  # Function to cache Git branch and Kubernetes context
+  cache_prompt_info() {
+    _GIT_PROMPT=$(parse_git_branch)
+    _KUBE_PROMPT=$(parse_kube_context)
+  }
+
+  # Update prompt command
+  bash_prompt_command() {
+    local EXIT_CODE=$?
+    local P_EXIT=""
+    local MAXLENGTH=35
+    local TRUNC_SYMBOL=".."
+    local DIR=${PWD##*/}
+    local P_PWD=${PWD/#$HOME/\~}
+    local TIME12H="\T"
+    local PATHSHORT="\w"
+
+    MAXLENGTH=$(((MAXLENGTH < ${#DIR}) ? ${#DIR} : MAXLENGTH))
+    local OFFSET=$((${#P_PWD} - MAXLENGTH))
+
+    if [ ${OFFSET} -gt 0 ]; then
+      P_PWD=${P_PWD:$OFFSET:$MAXLENGTH}
+      P_PWD=${TRUNC_SYMBOL}/${P_PWD#*/}
+    fi
+
+    # Update terminal title
+    if [[ $TERM == xterm* ]]; then
+      echo -ne "\033]0;${P_PWD}\007"
+    fi
+
+    # Exit code
+    if [[ $EXIT_CODE != 0 ]]; then
+      P_EXIT+="${P_RED}✘ "
+    fi
+
+    # effectively not a cache now but i need the changes to show
+    cache_prompt_info
+
+    PS1="${P_EXIT}${P_BGREEN}${TIME12H}${P_BLUEB}${_KUBE_PROMPT}${_GIT_PROMPT}${P_YELLOW} ${P_PWD}${P_RESET} \$ "
+  }
+
+  # Optimized Git branch parsing
+  parse_git_branch() {
+    local branch
+    if git rev-parse --is-inside-work-tree &>/dev/null; then
+      branch=$(git symbolic-ref --short HEAD 2>/dev/null || git describe --tags --exact-match 2>/dev/null)
+      if git diff --quiet 2>/dev/null >&2; then
+        echo "${P_GREEN}(${branch})"
+      else
+        echo "${P_BRED}{${branch}}"
+      fi
+    fi
+  }
+
+  # Optimized Kubernetes context parsing
+  parse_kube_context() {
+    local context=$(kubectl config current-context 2>/dev/null)
+    if [ -n "$context" ]; then
+      echo " - ${context} - "
+    fi
+  }
+
+  _bash_prompt_config
+
+  # Bind the prompt command to bash
+  PROMPT_COMMAND=bash_prompt_command
+fi

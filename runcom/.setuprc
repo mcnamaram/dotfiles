@@ -1,0 +1,58 @@
+#!/usr/bin/env bash
+
+# If not running interactively, don't do anything
+case "$-" in
+*i*) ;;
+*) return ;;
+esac
+
+# Resolve DOTFILES_DIR
+if [ -d "$HOME/.dotfiles" ]; then
+  DOTFILES_DIR="$HOME/.dotfiles"
+else
+  echo "Unable to find dotfiles, exiting."
+  return
+fi
+
+# Make utilities available
+PATH="$DOTFILES_DIR/bin:$PATH"
+
+# Source the dotfiles (order matters)
+for DOTFILE in "$DOTFILES_DIR"/system/.{env,function,function_*,path,alias,grep,completion,prompt_*,nvm,iterm,jabba,pyenv,rbenv,secrets}; do
+  [ -f "$DOTFILE" ] && source "$DOTFILE"
+done
+
+if is-macos; then
+  for DOTFILE in "$DOTFILES_DIR"/system/.{env,alias,function,path}.macos; do
+    [ -f "$DOTFILE" ] && source "$DOTFILE"
+  done
+fi
+
+# Set LSCOLORS
+eval "$(dircolors -b "$DOTFILES_DIR"/system/.dir_colors)"
+
+# Hook for extra/custom stuff
+DOTFILES_EXTRA_DIR="$HOME/.extra"
+
+if [ -d "$DOTFILES_EXTRA_DIR" ]; then
+  for EXTRAFILE in "$DOTFILES_EXTRA_DIR"/runcom/*.sh; do
+    [ -f "$EXTRAFILE" ] && source "$EXTRAFILE"
+  done
+fi
+
+# Clean up
+if is-executable kubectl.docker; then
+  rm -rf "$(command -v kubectl.docker)"
+fi
+
+unset DOTFILE EXTRAFILE
+
+# Ensure nvm is available
+if is-executable nvm; then
+  # make sublime work
+  test -e /usr/local/bin/node && rm /usr/local/bin/node
+  ln -sf "$(nvm which "$(nvm current)")" /usr/local/bin/node
+fi
+
+# Export
+export DOTFILES_DIR DOTFILES_EXTRA_DIR

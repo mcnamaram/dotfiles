@@ -6,5 +6,6 @@
   {"keys": ["ctrl+up"], "command": "scroll_lines", "args": {"amount": 2.0} },
   {"keys": ["ctrl+down"], "command": "scroll_lines", "args": {"amount": -2.0} },
   {"keys": ["alt+up"], "command": "scroll_lines", "args": {"amount": 2.0} },
-  {"keys": ["alt+down"], "command": "scroll_lines", "args": {"amount": -2.0} }
+  {"keys": ["alt+down"], "command": "scroll_lines", "args": {"amount": -2.0} },
+  { "keys": ["ctrl+i", "ctrl+s"], "command": "invert_selection" }
 ]

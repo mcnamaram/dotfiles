@@ -1,7 +1,7 @@
 SHELL = /bin/bash
 DOTFILES_DIR := $(dir $(realpath $(firstword $(MAKEFILE_LIST))))
 OS := $(shell bin/is-supported bin/is-macos macos linux)
-PATH := $(DOTFILES_DIR)/bin:$(PATH)
+PATH := $(DOTFILES_DIR)bin:$(PATH)
 NVM_DIR := $(HOME)/.nvm
 export XDG_CONFIG_HOME := $(HOME)/.config
 export STOW_DIR := $(DOTFILES_DIR)
@@ -14,7 +14,7 @@ macos: sudo core-macos packages link set-default-shell
 
 linux: core-linux link set-default-shell
 
-core-macos: brew bash git jabba nvm ruby python zsh
+core-macos: brew bash git sdkman nvm ruby python zsh
 
 core-linux:
 	apt-get update
@@ -45,7 +45,9 @@ unlink: stow-$(OS)
 	for FILE in $$(\ls -A runcom); do if [ -f $(HOME)/$$FILE.bak ]; then mv -v $(HOME)/$$FILE.bak $(HOME)/$${FILE%%.bak}; fi; done
 
 brew:
-	is-executable brew || /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/master/install.sh)"
+	is-executable brew || curl -fsSL https://raw.githubusercontent.com/Homebrew/install/master/install.sh | bash
+	eval "$$(/opt/homebrew/bin/brew shellenv)"
+	brew analytics off
 
 bash: BASH=/usr/local/bin/bash
 bash: SHELLS=/private/etc/shells
@@ -64,8 +66,8 @@ set-default-shell: bash
 git: brew
 	brew install git
 
-jabba:
-	curl -sL https://github.com/shyiko/jabba/raw/master/install.sh | bash && source ~/.jabba/jabba.sh
+sdkman:
+	curl -sL https://get.sdkman.io | bash && source ~/.sdkman/bin/sdkman-init.sh
 
 iterm2:
 	curl -L https://iterm2.com/shell_integration/bash -o ~/.iterm2_shell_integration.bash && source ~/.iterm2_shell_integration.bash
@@ -88,18 +90,18 @@ brew-packages: brew
 	  rm -f /usr/local/bin/kns; \
 	  brew unlink kubectx; \
 	  version=$$(brew info kubectx --json | jq -r '.[].versions.stable'); \
-	  ln -s /usr/local/Cellar/kubectx/$$version/bin/kubectx /usr/local/bin/kctx; \
-	  ln -s /usr/local/Cellar/kubectx/$$version/bin/kubens /usr/local/bin/kns; \
-	  ln -s /usr/local/Cellar/kubectx/$$version/etc/bash_completion.d/kubectx /usr/local/etc/bash_completion.d/kubectx; \
-	  ln -s /usr/local/Cellar/kubectx/$$version/etc/bash_completion.d/kubens /usr/local/etc/bash_completion.d/kubens; \
+	  ln -s $$(brew --prefix)/Cellar/kubectx/$$version/bin/kubectx /usr/local/bin/kctx; \
+	  ln -s $$(brew --prefix)/Cellar/kubectx/$$version/bin/kubens /usr/local/bin/kns; \
+	  ln -s $$(brew --prefix)/Cellar/kubectx/$$version/etc/bash_completion.d/kubectx $$(brew --prefix)/etc/bash_completion.d/kubectx; \
+	  ln -s $$(brew --prefix)/Cellar/kubectx/$$version/etc/bash_completion.d/kubens $$(brew --prefix)/etc/bash_completion.d/kubens; \
 	)
 
-jabba-jdk: jabba
-	$(shell . ~/.jabba/jabba.sh && \
-	jdk_ver=$$(jabba ls-remote --latest major | grep zulu) && \
-	jabba install $$jdk_ver && \
-	jabba use $$jdk_ver && \
-	jabba alias default $$jdk_ver)
+sdkman-jdk: sdkman
+	$(shell . ~/.sdkman/bin/sdkman-init.sh && \
+	sdk install java && \
+	jdk_ver=$$(sdk current java | awk '{print $$NF}') && \
+	sdk use java $$jdk_ver && \
+	sdk default java $$jdk_ver)
 
 code-exts: brew
 	@-is-executable code && for EXT in $$(cat install/Codefile); do \

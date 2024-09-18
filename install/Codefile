@@ -6,7 +6,6 @@ amazonwebservices.aws-toolkit-vscode
 angular.ng-template
 castwide.solargraph
 chdsbd.github-code-owners
-codemooseus.vscode-devtools-for-chrome
 codezombiech.gitignore
 craigmaslowski.erb
 darkriszty.markdown-table-prettify
@@ -63,10 +62,8 @@ ms-vscode-remote.remote-containers
 ms-vscode.makefile-tools
 ms-vscode.sublime-keybindings
 ms-vscode.test-adapter-converter
-ms-vscode.typescript-javascript-grammar
 ms-vscode.vscode-speech
 ms-vsliveshare.vsliveshare
-ms-vsliveshare.vsliveshare-pack
 mtxr.sqltools
 naco-siren.gradle-language
 nepaul.editorconfiggenerator

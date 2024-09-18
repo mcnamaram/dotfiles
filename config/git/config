@@ -1,243 +1,324 @@
 [apply]
 
-  # Detect whitespace errors when applying a patch
-  whitespace = fix
+# Detect whitespace errors when applying a patch
+
+whitespace = fix
 
 [core]
-  # Use custom `.gitignore` and `.gitattributes`
-  excludesfile = ~/.config/git/ignore
-  attributesfile = ~/.config/git/attributes
-  # TODO move to extras and parameterize to pick atom, code, or subl
-  editor = code --wait
-  filemode = false
-  whitespace = trailing-space,space-before-tab,tab-in-indent,cr-at-eol
-  # Make `git rebase` safer on macOS
-  # More info: <http://www.git-tower.com/blog/make-git-rebase-safe-on-osx/>
-  trustctime = false
-  autocrlf = input
-  untrackedCache = true
-  pager = delta --dark
+
+# Use custom `.gitignore` and `.gitattributes`
+
+excludesfile = ~/.config/git/ignore
+attributesfile = ~/.config/git/attributes
+
+editor = code --wait
+filemode = false
+whitespace = trailing-space,space-before-tab,tab-in-indent,cr-at-eol,space-at-eol
+
+# Make `git rebase` safer on macOS
+
+# More info: <http://www.git-tower.com/blog/make-git-rebase-safe-on-osx/>
+
+trustctime = false
+autocrlf = true
+untrackedCache = true
+pager = delta --features=diff-so-fancy --dark
 
 [commit]
-  # https://help.github.com/articles/signing-commits-using-gpg/
-  # TODO I want to do this, but not just yet
-  gpgsign = false
+
+# https://help.github.com/articles/signing-commits-using-gpg/
+
+# TODO I want to do this, but not just yet
+
+gpgsign = false
 
 [credential]
-  helper = osxkeychain
+helper = osxkeychain
 
 [grep]
-  lineNumber = true
+lineNumber = true
 
 [help]
-  # Automatically correct and execute mistyped commands
-  autocorrect = 3
+
+# Automatically correct and execute mistyped commands
+
+autocorrect = 3
 
 [push]
-  # current 2.x default
-  default = simple
-  # Make `git push` push relevant annotated tags when pushing branches out.
-  followTags = true
+
+# current 2.x default
+
+default = simple
+
+# Make `git push` push relevant annotated tags when pushing branches out.
+
+followTags = true
 
 [fetch]
-  prune = true
+prune = true
 
 [pull]
-  rebase = merges
+rebase = merges
 
 [status]
-  relativePaths = false
-  branch = true
+relativePaths = false
+branch = true
 
 [rebase]
-  autostash = true
-  abbreviatecommands = true
-  stat = true
+autostash = true
+abbreviatecommands = true
+stat = true
 
 [sequence]
-  editor = code --wait
+editor = code --wait
 
 [alias]
-  # edit this file
-  configedit = config --global -e
 
-  ## Logging/status
+# edit this file
 
-  # View abbreviated SHA, description, and history graph of the latest 20 commits
-  l = log --pretty=oneline -n 20 --graph --abbrev-commit
+configedit = config --global -e
 
-  lc = log ORIG_HEAD.. --stat --no-merges
-  lg = log --graph --pretty=format:'%Cred%h%Creset -%C(yellow)%d%Creset %s %Cgreen(%cr) %C(bold blue)<%an>%Creset' --abbrev-commit --date=relative
+## Logging/status
 
-  # what was the last logged commit
-  last = log -l HEAD
+# View abbreviated SHA, description, and history graph of the latest 20 commits
 
-  # View the current working tree status using the short format
-  s = status -s
+l = log --pretty=oneline -n 20 --graph --abbrev-commit
 
-  # make the bad go away
-  hardreset = reset HEAD --hard
+lc = log ORIG_HEAD.. --stat --no-merges
+lg = log --graph --pretty=format:'%Cred%h%Creset -%C(yellow)%d%Creset %s %Cgreen(%cr) %C(bold blue)<%an>%Creset' --abbrev-commit --date=relative
 
-  # Show the diff between the latest commit and the current state
-  changes = !"git diff-index --quiet HEAD -- || clear; git diff --patch-with-stat"
+# what was the last logged commit
 
-  # `git changesn $number` shows the diff between the state `$number` revisions ago and the current state
-  changesn = !"f() { git diff --patch-with-stat HEAD~$1; }; git diff-index --quiet HEAD -- || clear; f"
+last = log -l HEAD
 
-  # check out what changed in the last two commits; ignores current state
-  review = diff HEAD^ HEAD
+# View the current working tree status using the short format
 
-  br = branch
+s = status -s
 
-  # Show verbose output about tags, branches or remotes
-  tags = tag -l
-  branches = branch -a
-  remotes = remote -v
+# make the bad go away
 
-  # List aliases
-  aliases = config --get-regexp alias
-  alias = !"git aliases"
+hardreset = reset HEAD --hard
 
-  ## fetching/pulling
+# Show the diff between the latest commit and the current state
 
-  # Fetch and prune
-  f = fetch
+changes = !"git diff-index --quiet HEAD -- || clear; git diff --patch-with-stat"
 
-  ## fetch and prune tags
-  pt = !git tag -l | xargs git tag -d && git fetch -t
+# `git changesn $number` shows the diff between the state `$number` revisions ago and the current state
 
-  # Pull in remote changes for the current repository and all its submodules
-  p = !"git pull; git submodule update --recursive --remote"
-  all = !git stash && git fetch && git pull && git stash pop
+changesn = !"f() { git diff --patch-with-stat HEAD~$1; }; git diff-index --quiet HEAD -- || clear; f"
 
-  # Clone a repository including all submodules
-  c = clone --recursive
+# check out what changed in the last two commits; ignores current state
 
-  co = checkout
-  cob = checkout -b
+review = diff HEAD^ HEAD
 
-  ## committing/pushing
+br = branch
 
-  # who doesn't like a dad joke?
-  dad = !curl https://icanhazdadjoke.com/ && git add
+# Show verbose output about tags, branches or remotes
 
-  # commit with a message
-  ci = commit -m
+tags = tag -l
+branches = branch -a
+remotes = remote -v
 
-  # Commit all changes and mark as WIP
-  wip = "!wip() { git add -A && git commit -m \"wip(squash): $(curl -s http://whatthecommit.com/index.txt)\" --no-verify; }; wip"
+# List aliases
 
-  # Amend the currently staged files to the latest commit
-  amend = commit -a --amend --reuse-message=HEAD
+aliases = config --get-regexp alias
+alias = !"git aliases"
 
-  # Credit an author on the latest commit
-  credit = "!credit() { git commit --amend --author \"$1 <$2>\" -C HEAD; }; credit"
+## fetching/pulling
 
-  # Interactive rebase with the given number of latest commits
-  squash = "!squash() { git rebase -i HEAD~$1; }; squash"
+# Fetch and prune
 
-  ra = rebase --abort
-  rc = rebase --continue
-  rs = rebase --skip
+f = fetch
 
-  # Remove the old tag with this name and tag the latest commit with it.
-  retag = "!retag() { git tag -d $1 && git push origin :refs/tags/$1 && git tag $1; }; retag"
+## fetch and prune tags
 
-  # Remove branches that have already been merged with develop
-  # a.k.a. ‘delete merged’
-  dm = "!dm() { git branch --merged ${1-develop} | grep -v " ${1-develop}$" | gxargs -rpn1 git branch -d; }; dm"
+pt = !git tag -l | xargs git tag -d && git fetch -t
 
-  # remove other branches
-  bd = "!git branch -d $1 && echo '' && git branch -l && echo '  (Removed) $1'"
-  bdf = "!git branch -D $1 && echo '' && git branch -l && echo '  (RemoveD) $1'"
+# Pull in remote changes for the current repository and all its submodules
 
-  # short push
-  pu = push
-  pun = push --no-verify
-  puta = push --follow-tags
+p = !"git pull; git submodule update --recursive --remote"
+all = !git stash && git fetch && git pull && git stash pop
 
-  # short push --force
-  puf = push --force-with-lease
-  pufn = push --force-with-lease --no-verify
+# Clone a repository including all submodules
 
-  ## searching
+c = clone --recursive
 
-  # Find branches containing commit
-  fb = "!fb() { git branch -a --contains $1; }; fb"
+co = checkout
+cob = checkout -b
 
-  # Find tags containing commit
-  ft = "!ft() { git describe --always --contains $1; }; ft"
+## committing/pushing
 
-  # Find commits by source code
-  fc = "!fc() { git log --pretty=format:'%C(yellow)%h  %Cblue%ad  %Creset%s%Cgreen  [%cn] %Cred%d' --decorate --date=short -S$1; }; fc"
+# who doesn't like a dad joke?
 
-  # Find commits by commit message
-  fm = "!fm() { git log --pretty=format:'%C(yellow)%h  %Cblue%ad  %Creset%s%Cgreen  [%cn] %Cred%d' --decorate --date=short --grep=$1; }; fm"
+dad = !curl https://icanhazdadjoke.com/ && git add
 
-  # List contributors with number of commits
-  contrib = shortlog --summary --numbered
+# commit with a message
+
+ci = commit -m
+
+# Commit all changes and mark as WIP
+
+wip = "!wip() { git add -A && git commit -m \"wip(squash): $(curl -s http://whatthecommit.com/index.txt)\" --no-verify; }; wip"
+
+# Amend the currently staged files to the latest commit
+
+amend = commit -a --amend --reuse-message=HEAD
+
+# Credit an author on the latest commit
+
+credit = "!credit() { git commit --amend --author \"$1 <$2>\" -C HEAD; }; credit"
+
+# Interactive rebase with the given number of latest commits
+
+squash = "!squash() { git rebase -i HEAD~$1; }; squash"
+
+ra = rebase --abort
+rc = rebase --continue
+rs = rebase --skip
+
+# Remove the old tag with this name and tag the latest commit with it.
+
+retag = "!retag() { git tag -d $1 && git push origin :refs/tags/$1 && git tag $1; }; retag"
+
+# Remove branches that have already been merged with develop
+
+# a.k.a. ‘delete merged’
+
+dm = "!dm() { git branch --merged ${1-develop} | grep -v " ${1-develop}$" | git-xargs -rpn1 git branch -d; }; dm"
+
+# remove other branches
+
+bd = "!git branch -d $1 && echo '' && git branch -l && echo ' (Removed) $1'"
+bdf = "!git branch -D $1 && echo '' && git branch -l && echo ' (RemoveD) $1'"
+
+# short push
+
+pu = push
+pun = push --no-verify
+puta = push --follow-tags
+
+# short push --force
+
+puf = push --force-with-lease
+pufn = push --force-with-lease --no-verify
+
+## searching
+
+# Find branches containing commit
+
+fb = "!fb() { git branch -a --contains $1; }; fb"
+
+# Find tags containing commit
+
+ft = "!ft() { git describe --always --contains $1; }; ft"
+
+# Find commits by source code
+
+fc = "!fc() { git log --pretty=format:'%C(yellow)%h %Cblue%ad %Creset%s%Cgreen [%cn] %Cred%d' --decorate --date=short -S$1; }; fc"
+
+# Find commits by commit message
+
+fm = "!fm() { git log --pretty=format:'%C(yellow)%h %Cblue%ad %Creset%s%Cgreen [%cn] %Cred%d' --decorate --date=short --grep=$1; }; fm"
+
+# List contributors with number of commits
+
+contrib = shortlog --summary --numbered
 
 [diff]
-  # Detect copies as well as renames
-  renames = copies
-  # Enable an experimental heuristic that shifts the hunk boundary in an
-  # attempt to make the resulting patch easier to read.
-  indentHeuristic = true
 
-  # use 'i' and 'w' for index and working tree instead of 'a' and 'b'
-  mnemonicprefix = true
-  tool = delta
+# Detect copies as well as renames
+
+renames = copies
+
+# Enable an experimental heuristic that shifts the hunk boundary in an
+
+# attempt to make the resulting patch easier to read.
+
+indentHeuristic = true
+
+# use 'i' and 'w' for index and working tree instead of 'a' and 'b'
+
+mnemonicprefix = true
+tool = delta
+colorMoved = default
+whitespace = -space-at-eol, -space-before-tab, indent-with-non-tab, cr-at-eol
+ignoreWhitespaceChange = true
+
 [diff "sopsdiffer"]
-  textconv = sops -d
+textconv = sops -d
+
 [diff "bin"]
-  # Use `hexdump` to diff binary files
-  textconv = hexdump -v -C
+
+# Use `hexdump` to diff binary files
+
+textconv = hexdump -v -C
 
 # TODO move next few sections to extra to pick the tool (e.g. atom v. subl)
+
 [difftool]
-  prompt = false
+prompt = false
+
 [difftool "delta"]
-  cmd = delta --diff $LOCAL $REMOTE
+cmd = delta --diff $LOCAL $REMOTE
 
 [merge]
-  tool = code
-  conflictstyle = diff3
-  defaultToUpstream = true
-  # Include summaries of merged commits in newly created merge commit messages
-  log = true
+tool = code
+conflictstyle = diff3
+defaultToUpstream = true
+
+# Include summaries of merged commits in newly created merge commit messages
+
+log = true
 
 [mergetool]
-  prompt = false
+prompt = false
+
 [mergetool "code"]
-  cmd = code --wait $MERGED
-  trustExitCode = false
+cmd = code --wait $MERGED
+trustExitCode = false
 
 [color]
-  # Use colors in Git commands that are capable of colored output when
-  # outputting to the terminal. (This is the default setting in Git ≥ 1.8.4.)
-  ui = auto
 
-  interactive = true
+# Use colors in Git commands that are capable of colored output when
+
+# outputting to the terminal. (This is the default setting in Git ≥ 1.8.4.)
+
+ui = auto
+
+interactive = true
 [color "branch"]
-  current = yellow reverse
-  local = yellow
-  remote = green
+current = yellow reverse
+local = yellow
+remote = green
 [color "diff"]
-  meta = yellow bold
-  frag = magenta bold # line info
-  old = red # deletions
-  new = green # additions
+meta = yellow bold
+frag = magenta bold # line info
+old = red           # deletions
+new = green         # additions
 [color "status"]
-  added = yellow
-  changed = green
-  untracked = cyan
+added = yellow
+changed = green
+untracked = cyan
 [color "diff-highlight"]
-  oldNormal = red bold
-  oldHighlight = red bold 52
-  newNormal = green bold
-  newHighlight = green bold 22
+oldNormal = red bold
+oldHighlight = red bold 52
+newNormal = green bold
+newHighlight = green bold 22
+
 [user]
 	name = Michael McNamara
 	email = mike.mcnamara@arcadia.io
+
 [init]
-	defaultBranch = develop
+defaultBranch = develop
+
+[delta]
+features = diff-so-fancy line-numbers decorations inline line-numbers diff-highlight
+syntax-theme = Monokai Extended
+plus-style = syntax "#012800"
+minus-style = syntax "#340001"
+side-by-side = true
+whitespace = ignore-all-space
+
+[interactive]
+diffFilter = delta --color-only

@@ -2,6 +2,12 @@
 <!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
 <plist version="1.0">
 <dict>
+	<key>AiMaxTokens</key>
+	<integer>128000</integer>
+	<key>AiModel</key>
+	<string>gpt-4o</string>
+	<key>AlwaysOpenWindowAtStartup</key>
+	<true/>
 	<key>Default Bookmark Guid</key>
 	<string>D6F51E38-8BB0-4DE8-A603-81424B6D2AD5</string>
 	<key>HapticFeedbackForEsc</key>
@@ -10,6 +16,8 @@
 	<true/>
 	<key>IRMemory</key>
 	<integer>4</integer>
+	<key>NeverBlockSystemShutdown</key>
+	<true/>
 	<key>New Bookmarks</key>
 	<array>
 		<dict>
@@ -536,6 +544,8 @@
 					<string>[1;5F</string>
 				</dict>
 			</dict>
+			<key>Load Shell Integration Automatically</key>
+			<true/>
 			<key>Mouse Reporting</key>
 			<true/>
 			<key>Name</key>
@@ -607,7 +617,7 @@
 			<key>Window Type</key>
 			<integer>0</integer>
 			<key>Working Directory</key>
-			<string>/Users/mikemcnamara</string>
+			<string>/Users/mikemcnamara/dev</string>
 		</dict>
 	</array>
 	<key>OnlyWhenMoreTabs</key>
@@ -647,16 +657,18 @@
 			<string>kNextWindowPointerAction</string>
 		</dict>
 	</dict>
-	<key>PreventEscapeSequenceFromClearingHistory</key>
-	<false/>
 	<key>Print In Black And White</key>
 	<true/>
 	<key>PromptOnQuit</key>
 	<false/>
 	<key>QuitWhenAllWindowsClosed</key>
 	<false/>
+	<key>RestoreWindowsToSameSpaces</key>
+	<true/>
 	<key>ShowFullScreenTabBar</key>
 	<true/>
+	<key>SmartPlacement</key>
+	<false/>
 	<key>SoundForEsc</key>
 	<false/>
 	<key>VisualIndicatorForEsc</key>

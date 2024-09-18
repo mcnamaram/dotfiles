@@ -9,9 +9,9 @@
 *.scss text
 *.md text
 *.json text
+*.txt text
 
 # Explicitly set binary files
-*.bat binary
 *.exe binary
 *.dll binary
 *.so binary
@@ -37,11 +37,6 @@ public/build/css/*.css -diff
 *.map -diff
 *.lock -diff
 rev-manifest.json -diff
-
-# Additional end-of-line normalization
-*.sh text eol=lf
-*.bat text eol=crlf
-*.ps1 text eol=crlf
 
 # Ensure these files are treated as text regardless of their extension
 .gitattributes text

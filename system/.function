@@ -8,7 +8,7 @@ ps0() {
 }
 
 ps1() {
-  source "$DOTFILES_DIR"/system/.prompt
+  source "$DOTFILES_DIR"/system/.prompt_bash
 }
 
 # Get named var (usage: get "VAR_NAME")

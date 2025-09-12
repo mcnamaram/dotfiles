@@ -9,7 +9,7 @@
 - [Node.js + npm LTS](https://nodejs.org/en/download/) (packages: [npmfile](./install/npmfile))
 - Latest Ruby (packages: [Gemfile](./install/Gemfile))
 - Latest Git, Bash, Python 3, GNU coreutils, curl
-- `$EDITOR` (and Git editor) is [Sublime Text 3](https://www.sublimetext.com/)
+- `$EDITOR` (and Git editor) is [Cursor](https://cursor.sh/)
 
 ## Installation
 
@@ -21,7 +21,7 @@ This targets macOS but with some apt-get should be fine for \*nix.
     * Thoughtbot [Intro to Dotfiles](https://thoughtbot.com/upcase/videos/intro-to-dotfiles)
     * ArchWiki [Dotfiles](https://wiki.archlinux.org/index.php/Dotfiles)
 
-_Use at your own risk!_  And please, _please_, triple check to not check in api-keys, passwords, and anything else sensitive that might linger in your configs.
+_Use at your own risk!_ And please, _please_, triple check to not check in api-keys, passwords, and anything else sensitive that might linger in your configs.
 
 On a sparkling fresh installation of macOS:
 

@@ -23,11 +23,10 @@ $RECYCLE.BIN/
 # Editor and IDE files #
 ######################
 *~
-*.sublime-workspace
 .idea
-.vscode
+.cursor
 .idea/
-.vscode/
+.cursor/
 .sts4-cache
 *.iml
 *.log

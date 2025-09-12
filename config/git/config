@@ -11,7 +11,7 @@ whitespace = fix
 excludesfile = ~/.config/git/ignore
 attributesfile = ~/.config/git/attributes
 
-editor = code --wait
+	editor = cursor --wait
 filemode = false
 whitespace = trailing-space,space-before-tab,tab-in-indent,cr-at-eol,space-at-eol
 
@@ -248,7 +248,7 @@ indentHeuristic = true
 # use 'i' and 'w' for index and working tree instead of 'a' and 'b'
 
 mnemonicprefix = true
-tool = delta
+	tool = cursor
 colorMoved = default
 whitespace = -space-at-eol, -space-before-tab, indent-with-non-tab, cr-at-eol
 ignoreWhitespaceChange = true
@@ -271,7 +271,7 @@ prompt = false
 cmd = delta --diff $LOCAL $REMOTE
 
 [merge]
-tool = code
+	tool = cursor
 conflictstyle = diff3
 defaultToUpstream = true
 

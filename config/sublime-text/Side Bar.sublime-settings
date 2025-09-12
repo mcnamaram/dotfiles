@@ -1,4 +1,0 @@
-{
-    "close_affected_buffers_when_deleting_even_if_dirty": true,
-    "open_all_browsers": ["chrome", "firefox", "safari"] //any of this list: firefox, chrome, canary, chromium, opera, safari, ie, edge
-}

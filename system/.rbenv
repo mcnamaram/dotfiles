@@ -2,6 +2,6 @@
 
 # export RUBY_CONFIGURE_OPTS="--with-openssl-dir=$(brew --prefix openssl@1.1)"
 
-if is-executable rbenv; then
-  eval "$(rbenv init -)"
-fi
+# if is-executable rbenv; then
+#   eval "$(rbenv init -)"
+# fi

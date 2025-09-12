@@ -12,5 +12,5 @@ if [ -f "$HOME/.bashrc" ]; then
 fi
 
 #THIS MUST BE AT THE END OF THE FILE FOR SDKMAN TO WORK!!!
-export SDKMAN_DIR="$HOME/.sdkman"
-[[ -s "$HOME/.sdkman/bin/sdkman-init.sh" ]] && source "$HOME/.sdkman/bin/sdkman-init.sh"
+# shellcheck disable=SC1091
+[ -f "$HOME/.dotfiles/system/.sdkman" ] && source "$HOME/.dotfiles/system/.sdkman"

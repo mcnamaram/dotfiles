@@ -1,12 +1,9 @@
-tap "aws/tap"
 tap "buildpacks/tap"
 tap "homebrew/bundle"
 tap "spectolabs/tap"
 
 brew "argocd"
 brew "automake"
-brew "aws-sam-cli"
-brew "awscli"
 brew "bash-completion@2"
 brew "bash"
 brew "blackbox"

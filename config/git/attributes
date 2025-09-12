@@ -1,15 +1,36 @@
 # Set default behavior to automatically normalize line endings
-* text=auto
+* text=auto eol=lf
+* -crlf diff
 
 # Explicitly set text files
-*.php text
-*.js text
-*.html text
-*.css text
-*.scss text
-*.md text
-*.json text
-*.txt text
+*.csv text eol=lf
+*.md text eol=lf
+*.json text eol=lf
+*.txt text eol=lf
+*.sql text eol=lf
+*.yml text eol=lf
+*.yaml text eol=lf
+*.sh text eol=lf
+*.py text eol=lf
+*.js text eol=lf
+*.ts text eol=lf
+*.jsx text eol=lf
+*.tsx text eol=lf
+*.html text eol=lf
+*.css text eol=lf
+*.scss text eol=lf
+*.xml text eol=lf
+*.properties text eol=lf
+*.conf text eol=lf
+*.cfg text eol=lf
+*.ini text eol=lf
+*.toml text eol=lf
+*.lock text eol=lf
+
+# Windows-specific files that should use CRLF
+*.bat text eol=crlf
+*.cmd text eol=crlf
+*.ps1 text eol=crlf
 
 # Explicitly set binary files
 *.exe binary
@@ -30,6 +51,7 @@
 # Ignore diffs for specific files
 composer.lock -diff
 yarn.lock -diff
+package-lock.json -diff
 public/build/js/*.js -diff
 public/build/css/*.css -diff
 *.min.js -diff

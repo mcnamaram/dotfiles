@@ -32,7 +32,7 @@ if [ -n "$BASH_VERSION" ]; then
   (is-executable minikube) && source <(minikube completion bash)
   (is-executable kubectl) && source <(kubectl completion bash)
   (is-executable helm) && source <(helm completion bash)
-  (is-executable kubectl-testkube) && source <(kubectl-testkube completion bash)
+  # (is-executable kubectl-testkube) && source <(kubectl-testkube completion bash)
 
   (is-executable poetry) && eval "$(poetry completions bash)"
 
@@ -46,7 +46,7 @@ elif [ -n "$ZSH_VERSION" ]; then
   (is-executable minikube) && source <(minikube completion zsh)
   (is-executable kubectl) && source <(kubectl completion zsh)
   (is-executable helm) && source <(helm completion zsh)
-  (is-executable kubectl-testkube) && source <(kubectl-testkube completion zsh)
+  # (is-executable kubectl-testkube) && source <(kubectl-testkube completion zsh)
 
   (is-executable poetry) && eval "$(poetry completions zsh)"
 fi

@@ -20,7 +20,7 @@ whitespace = trailing-space,space-before-tab,tab-in-indent,cr-at-eol,space-at-eo
 # More info: <http://www.git-tower.com/blog/make-git-rebase-safe-on-osx/>
 
 trustctime = false
-autocrlf = true
+autocrlf = input
 untrackedCache = true
 pager = delta --features=diff-so-fancy --dark
 
@@ -89,7 +89,7 @@ lg = log --graph --pretty=format:'%Cred%h%Creset -%C(yellow)%d%Creset %s %Cgreen
 
 # what was the last logged commit
 
-last = log -l HEAD
+last = log -n 1 HEAD
 
 # View the current working tree status using the short format
 
@@ -112,6 +112,7 @@ changesn = !"f() { git diff --patch-with-stat HEAD~$1; }; git diff-index --quiet
 review = diff HEAD^ HEAD
 
 br = branch
+bra = branch -a
 
 # Show verbose output about tags, branches or remotes
 
@@ -180,16 +181,23 @@ rs = rebase --skip
 
 retag = "!retag() { git tag -d $1 && git push origin :refs/tags/$1 && git tag $1; }; retag"
 
-# Remove branches that have already been merged with develop
+# Remove branches that have already been merged with main
 
 # a.k.a. ‘delete merged’
 
-dm = "!dm() { git branch --merged ${1-develop} | grep -v " ${1-develop}$" | git-xargs -rpn1 git branch -d; }; dm"
+dm = "!dm() { git branch --merged ${1-main} | grep -v " ${1-main}$" | xargs -rpn1 git branch -d; }; dm"
+
+# assume files as unchanged to remove from tracking locally (e.g. line endings changed you don't want to check back in)
+ignore-files = "!f() { git update-index --assume-unchanged "$@"; }; f"
+
+# stop ignoring files locally
+track-files = "!f() { git update-index --no-assume-unchanged "$@"; }; f"
 
 # remove other branches
 
 bd = "!git branch -d $1 && echo '' && git branch -l && echo ' (Removed) $1'"
 bdf = "!git branch -D $1 && echo '' && git branch -l && echo ' (RemoveD) $1'"
+bdlist = "!f() { for branch in "$@"; do git branch -D $branch && echo ' (RemoveD) $branch'; done; }; f"
 
 # short push
 
@@ -223,6 +231,7 @@ fm = "!fm() { git log --pretty=format:'%C(yellow)%h %Cblue%ad %Creset%s%Cgreen [
 # List contributors with number of commits
 
 contrib = shortlog --summary --numbered
+	rebase-main = !git fetch origin && git rebase origin/main
 
 [diff]
 
@@ -322,3 +331,5 @@ whitespace = ignore-all-space
 
 [interactive]
 diffFilter = delta --color-only
+[advice]
+	skippedCherryPicks = false

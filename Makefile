@@ -31,7 +31,7 @@ sudo:
 	sudo -v
 	while true; do sudo -n true; sleep 240; kill -0 "$$" || exit; done 2>/dev/null &
 
-packages: brew-packages jabba-jdk code-exts subl-inst node-packages gems python-packages aws
+packages: brew-packages jabba-jdk cursor-exts node-packages gems python-packages aws
 
 link: stow-$(OS)
 	for FILE in $$(\ls -A runcom); do if [ -f $(HOME)/$$FILE -a ! -h $(HOME)/$$FILE ]; then mv -v $(HOME)/$$FILE{,.bak}; fi; done
@@ -103,22 +103,13 @@ sdkman-jdk: sdkman
 	sdk use java $$jdk_ver && \
 	sdk default java $$jdk_ver)
 
-code-exts: brew
-	@-is-executable code && for EXT in $$(cat install/Codefile); do \
-		if ! code --install-extension $$EXT; then \
+cursor-exts: brew
+	@-is-executable cursor && for EXT in $$(cat install/Codefile); do \
+		if ! cursor --install-extension $$EXT; then \
 			curl -sSL "https://marketplace.visualstudio.com/_apis/public/gallery/publishers/$${EXT%%.*}/vsextensions/$${EXT##*.}/latest/vspackage" -o "$${EXT}.vsix"; \
-			code --install-extension "$${EXT}.vsix"; \
+			cursor --install-extension "$${EXT}.vsix"; \
 		fi; \
 	done
-
-subl-inst: brew
-	@-is-executable subl && ( \
-		rm -rf "$(HOME)/Library/Application Support/Sublime Text 3/Packages/User"; \
-		mkdir -p "$(HOME)/Library/Application Support/Sublime Text 3/Installed Packages/"; \
-		mkdir -p "$(HOME)/Library/Application Support/Sublime Text 3/Packages/"; \
-		curl -fsSL "https://packagecontrol.io/Package%20Control.sublime-package" > "$(HOME)/Library/Application Support/Sublime Text 3/Installed Packages/Package Control.sublime-package"; \
-		ln -s $(DOTFILES_DIR)config/sublime-text/ "$(HOME)/Library/Application Support/Sublime Text 3/Packages/User"; \
-	)
 
 node-packages: nvm
 	. $(NVM_DIR)/nvm.sh; npm install --location global $(shell cat install/npmfile)

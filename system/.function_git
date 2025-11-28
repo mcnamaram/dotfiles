@@ -1,0 +1,49 @@
+#!/usr/bin/env bash
+
+_git_ci() {
+  set -euo pipefail
+
+  CONFIG_PROMPT_PATH="${HOME}/.config/aicommit2/system-prompt.txt"
+
+  # Build base prompt: if there's a system-prompt.txt, start with that
+  base_prompt=""
+  if [ -f "$CONFIG_PROMPT_PATH" ]; then
+    base_prompt="$(cat "$CONFIG_PROMPT_PATH")"
+  fi
+
+  if command -v aicommit2 >/dev/null 2>&1; then
+    if [ "$#" -eq 0 ]; then
+      # No args: just use aicommit2 with existing config
+      exec aicommit2 -s -y
+    elif [ "$#" -eq 1 ] && echo "$1" | grep -Eq '^[A-Za-z][A-Za-z0-9]*-[0-9]+$'; then
+      # One arg that looks like a JIRA ID
+      jira_raw="$1"
+      jira_upper="$(printf '%s' "$jira_raw" | tr '[:lower:]' '[:upper:]')"
+      shift
+
+      jira_prompt=$(cat <<EOF
+For THIS commit only, the JIRA ticket is ${jira_upper}.
+You MUST use ${jira_upper} as the scope in the Conventional Commit subject line:
+<type>(${jira_upper}): <summary>
+
+Do NOT use any other scope (no file-based scopes like (auth), (tests), etc.) when generating the subject.
+EOF
+)
+
+      # Combine base prompt + JIRA-specific instructions
+      if [ -n "$base_prompt" ]; then
+        combined_prompt="${base_prompt}
+
+  ${jira_prompt}"
+      else
+        combined_prompt="${jira_prompt}"
+      fi
+
+      # Call aicommit2 with the combined prompt
+      exec aicommit2 -s -y -p "$combined_prompt"
+    fi
+  fi
+
+  # Fallback: behave like normal git commit
+  exec git commit "$@"
+}

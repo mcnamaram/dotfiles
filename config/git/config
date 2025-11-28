@@ -10,8 +10,9 @@ whitespace = fix
 
 excludesfile = ~/.config/git/ignore
 attributesfile = ~/.config/git/attributes
+hooksPath = ~/.config/git/hooks
 
-	editor = cursor --wait
+editor = cursor --wait
 filemode = false
 whitespace = trailing-space,space-before-tab,tab-in-indent,cr-at-eol,space-at-eol
 
@@ -70,7 +71,7 @@ abbreviatecommands = true
 stat = true
 
 [sequence]
-editor = code --wait
+editor = cursor --wait
 
 [alias]
 
@@ -149,21 +150,20 @@ cob = checkout -b
 
 ## committing/pushing
 
-# who doesn't like a dad joke?
-
-dad = !curl https://icanhazdadjoke.com/ && git add
-
 # commit with a message
 
-ci = commit -m
+cim = commit -m
+ci = '!git-ci'
+
 
 # Commit all changes and mark as WIP
 
-wip = "!wip() { git add -A && git commit -m \"wip(squash): $(curl -s http://whatthecommit.com/index.txt)\" --no-verify; }; wip"
+wip = "!wip() { git add -A && git commit -m \"chore(squash): squash me\" --no-verify; }; wip"
 
 # Amend the currently staged files to the latest commit
 
-amend = commit -a --amend --reuse-message=HEAD
+amend = "!f() { if command -v aicommit2 >/dev/null 2>&1 && [ \"$#\" -eq 0 ]; then aicommit2 --amend -a -s -y; else git commit -a --amend \"$@\"; fi; }; f"
+remend = commit -a --amend --reuse-message=HEAD
 
 # Credit an author on the latest commit
 
@@ -271,7 +271,7 @@ prompt = false
 cmd = delta --diff $LOCAL $REMOTE
 
 [merge]
-	tool = cursor
+tool = cursor
 conflictstyle = diff3
 defaultToUpstream = true
 
@@ -282,8 +282,8 @@ log = true
 [mergetool]
 prompt = false
 
-[mergetool "code"]
-cmd = code --wait $MERGED
+[mergetool "cursor"]
+cmd = cursor --wait $MERGED
 trustExitCode = false
 
 [color]

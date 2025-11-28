@@ -49,5 +49,5 @@ calc() {
 # Markdown
 
 md() {
-  pandoc $1 | lynx -stdin -dump
+  pandoc "$1" | lynx -stdin -dump
 }

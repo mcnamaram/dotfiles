@@ -103,3 +103,4 @@ coverage/
 .cache/
 *.backup
 .*~lock~
+.env.sso

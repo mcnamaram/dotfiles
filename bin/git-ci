@@ -1,10 +1,8 @@
 #!/usr/bin/env bash
 
+CONFIG_PROMPT_PATH="${HOME}/.config/aicommit2/system-prompt.txt"
+
 _git_ci() {
-  set -euo pipefail
-
-  CONFIG_PROMPT_PATH="${HOME}/.config/aicommit2/system-prompt.txt"
-
   # Build base prompt: if there's a system-prompt.txt, start with that
   base_prompt=""
   if [ -f "$CONFIG_PROMPT_PATH" ]; then
@@ -34,7 +32,7 @@ EOF
       if [ -n "$base_prompt" ]; then
         combined_prompt="${base_prompt}
 
-  ${jira_prompt}"
+${jira_prompt}"
       else
         combined_prompt="${jira_prompt}"
       fi
@@ -47,3 +45,5 @@ EOF
   # Fallback: behave like normal git commit
   exec git commit "$@"
 }
+
+_git_ci "$@"

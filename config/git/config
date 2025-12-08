@@ -153,7 +153,7 @@ cob = checkout -b
 # commit with a message
 
 cim = commit -m
-ci = '!git_ci'  # found in .dotfiles/bin/git-ci
+ci = '!git-ci'  # found in .dotfiles/bin/git-ci
 
 
 # Commit all changes and mark as WIP

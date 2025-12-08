@@ -1,6 +1,11 @@
 #!/usr/bin/env bash
+set -eo pipefail
 
 CONFIG_PROMPT_PATH="${HOME}/.config/aicommit2/system-prompt.txt"
+
+# Show error details before exiting
+_error_handler() { local rc=$?; echo "git-ci: Error at line $1 (exit code: $rc)" >&2; exit $rc; }
+trap '_error_handler $LINENO' ERR
 
 _git_ci() {
   # Build base prompt: if there's a system-prompt.txt, start with that
@@ -12,7 +17,8 @@ _git_ci() {
   if command -v aicommit2 >/dev/null 2>&1; then
     if [ "$#" -eq 0 ]; then
       # No args: just use aicommit2 with existing config
-      exec aicommit2 -s -y
+      aicommit2 -s -y
+      exit $?
     elif [ "$#" -eq 1 ] && echo "$1" | grep -Eq '^[A-Za-z][A-Za-z0-9]*-[0-9]+$'; then
       # One arg that looks like a JIRA ID
       jira_raw="$1"
@@ -38,12 +44,13 @@ ${jira_prompt}"
       fi
 
       # Call aicommit2 with the combined prompt
-      exec aicommit2 -s -y -p "$combined_prompt"
+      aicommit2 -s -y -p "$combined_prompt"
+      exit $?
     fi
   fi
 
   # Fallback: behave like normal git commit
-  exec git commit "$@"
+  git commit "$@"
 }
 
 _git_ci "$@"

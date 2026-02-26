@@ -1,0 +1,73 @@
+#!/usr/bin/env bash
+
+# AI tooling functions — Cursor rule syncing, etc.
+
+sync-cursor-rules() {
+  local cursor_home="${HOME}/.cursor"
+  local rules_dir="${cursor_home}/rules"
+  local skills_dir="${cursor_home}/skills-cursor"
+  local cache_dir="${cursor_home}/.rule-sources"
+  local filter="${1:-}"
+
+  mkdir -p "${rules_dir}" "${skills_dir}" "${cache_dir}"
+
+  _sync_repo() {
+    local repo="$1"
+    local prefix="$2"
+    local repo_name="${repo#*/}"
+    local clone_dir="${cache_dir}/${repo_name}"
+
+    echo ":: ${repo} → prefix '${prefix}'"
+
+    if [[ -d "${clone_dir}/.git" ]]; then
+      git -C "${clone_dir}" fetch --depth 1 origin main --quiet 2>/dev/null
+      git -C "${clone_dir}" reset --hard origin/main --quiet 2>/dev/null
+    else
+      gh repo clone "${repo}" "${clone_dir}" -- --depth 1 --quiet 2>/dev/null
+    fi
+
+    rm -f "${rules_dir}/${prefix}--"*.mdc
+
+    local rule_count=0
+    if [[ -d "${clone_dir}/.cursor/rules" ]]; then
+      for f in "${clone_dir}/.cursor/rules/"*.mdc; do
+        [[ -f "$f" ]] || continue
+        cp "$f" "${rules_dir}/${prefix}--$(basename "$f")"
+        rule_count=$((rule_count + 1))
+      done
+    fi
+    echo "   Rules: ${rule_count}"
+
+    local skill_count=0
+    if [[ -d "${clone_dir}/.cursor/skills" ]]; then
+      for skill_dir in "${clone_dir}/.cursor/skills/"*/; do
+        [[ -d "$skill_dir" ]] || continue
+        local skill_name
+        skill_name=$(basename "$skill_dir")
+        local target="${skills_dir}/${prefix}--${skill_name}"
+        rm -rf "${target}"
+        cp -r "$skill_dir" "${target}"
+        skill_count=$((skill_count + 1))
+      done
+    fi
+    echo "   Skills: ${skill_count}"
+  }
+
+  if [[ -z "$filter" || "$filter" == "wf" ]]; then
+    _sync_repo "arcadia/aa-workflow-cursor-workspace" "wf"
+  fi
+  if [[ -z "$filter" || "$filter" == "ct" ]]; then
+    _sync_repo "arcadia/centest" "ct"
+  fi
+
+  unset -f _sync_repo
+
+  echo ""
+  echo "Rules:"
+  ls -1 "${rules_dir}/"*.mdc 2>/dev/null | sed 's|.*/||' | sort
+  echo ""
+  echo "Skills:"
+  ls -1d "${skills_dir}/"*/ 2>/dev/null | sed 's|.*/\(.*\)/|\1|' | sort
+  echo ""
+  echo "Done — $(date '+%Y-%m-%d %H:%M:%S')"
+}

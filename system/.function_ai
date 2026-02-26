@@ -38,6 +38,11 @@ sync-cursor-rules() {
     fi
     echo "   Rules: ${rule_count}"
 
+    # Remove all previously synced skills for this prefix before copying
+    for old_skill in "${skills_dir}/${prefix}--"*/; do
+      [[ -d "$old_skill" ]] && rm -rf "$old_skill"
+    done
+
     local skill_count=0
     if [[ -d "${clone_dir}/.cursor/skills" ]]; then
       for skill_dir in "${clone_dir}/.cursor/skills/"*/; do

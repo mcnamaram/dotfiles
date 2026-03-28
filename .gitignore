@@ -17,3 +17,4 @@ config/sublime-text/rbql_table_index_hex
 .secrets
 .vscode
 system/.function_ai
+config/git/config.local

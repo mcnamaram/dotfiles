@@ -1,3 +1,4 @@
+# shellcheck disable=all
 [apply]
 
 # Detect whitespace errors when applying a patch
@@ -27,11 +28,7 @@ pager = delta --features=diff-so-fancy --dark
 
 [commit]
 
-# https://help.github.com/articles/signing-commits-using-gpg/
-
-# TODO I want to do this, but not just yet
-
-gpgsign = false
+	gpgsign = true
 
 [credential]
 helper = osxkeychain
@@ -162,8 +159,7 @@ wip = "!wip() { git add -A && git commit -m \"chore(squash): squash me\" --no-ve
 
 # Amend the currently staged files to the latest commit
 
-amend = "!f() { if command -v aicommit2 >/dev/null 2>&1 && [ \"$#\" -eq 0 ]; then aicommit2 --amend -a -s -y; else git commit -a --amend \"$@\"; fi; }; f"
-remend = commit -a --amend --reuse-message=HEAD
+amend = commit -a --amend --reuse-message=HEAD
 
 # Credit an author on the latest commit
 
@@ -172,6 +168,7 @@ credit = "!credit() { git commit --amend --author \"$1 <$2>\" -C HEAD; }; credit
 # Interactive rebase with the given number of latest commits
 
 squash = "!squash() { git rebase -i HEAD~$1; }; squash"
+sqsh = "!f() { git reset origin/main --soft; git-ci $@; }; f"
 
 ra = rebase --abort
 rc = rebase --continue
@@ -231,7 +228,7 @@ fm = "!fm() { git log --pretty=format:'%C(yellow)%h %Cblue%ad %Creset%s%Cgreen [
 # List contributors with number of commits
 
 contrib = shortlog --summary --numbered
-	rebase-main = !git fetch origin && git rebase origin/main
+rebase-main = !git fetch origin && git rebase origin/main
 
 [diff]
 
@@ -314,12 +311,8 @@ oldHighlight = red bold 52
 newNormal = green bold
 newHighlight = green bold 22
 
-[user]
-	name = Michael McNamara
-	email = mike.mcnamara@arcadia.io
-
 [init]
-defaultBranch = develop
+defaultBranch = main
 
 [delta]
 features = diff-so-fancy line-numbers decorations inline line-numbers diff-highlight
@@ -331,5 +324,12 @@ whitespace = ignore-all-space
 
 [interactive]
 diffFilter = delta --color-only
+
 [advice]
 	skippedCherryPicks = false
+
+[gpg]
+	program = /usr/local/bin/gpg
+
+[include]
+    path = ~/.config/git/config.local

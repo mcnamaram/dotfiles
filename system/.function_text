@@ -1,44 +1,84 @@
 #!/usr/bin/env bash
 
-# Show a specific line from a file, optionally show surrounding lines
+# Show a specific line from stdin or a file, optionally with surrounding lines.
+# Usage: line N [AROUND] [FILE]; if FILE omitted, read stdin (AROUND may be second arg).
 
 line() {
-  if [ ! -f "$3" ]; then
-    echo "File not found: $3"
-    return 1
-  fi
-  local LINE_NUMBER=$1
-  local LINES_AROUND=${2:-0}
-  sed -n "$((LINE_NUMBER - LINES_AROUND)),$((LINE_NUMBER + LINES_AROUND))p" "$3"
+	local LINE_NUMBER=$1
+	local LINES_AROUND=0
+	local FILE=""
+	if [ -n "${3:-}" ]; then
+		LINES_AROUND=$2
+		FILE=$3
+	elif [ -n "${2:-}" ]; then
+		if [ -f "$2" ]; then
+			FILE=$2
+			LINES_AROUND=0
+		else
+			LINES_AROUND=$2
+		fi
+	fi
+
+	_run_line_sed() {
+		sed -n "$((LINE_NUMBER - LINES_AROUND)),$((LINE_NUMBER + LINES_AROUND))p" "$1"
+	}
+
+	if [ -z "$FILE" ]; then
+		local tmp
+		tmp=$(mktemp)
+		cat >"$tmp"
+		_run_line_sed "$tmp"
+		rm -f "$tmp"
+	else
+		if [ ! -f "$FILE" ]; then
+			echo "File not found: $FILE"
+			return 1
+		fi
+		_run_line_sed "$FILE"
+	fi
 }
 
-# Show duplicate lines in a file
+# Duplicate lines (stdin if no file argument).
 
 duplines() {
-  if [ ! -f "$1" ]; then
-    echo "File not found: $1"
-    return 1
-  fi
-  sort "$1" | uniq -d
+	if [ -z "${1:-}" ]; then
+		local tmp
+		tmp=$(mktemp)
+		cat >"$tmp"
+		sort "$tmp" | uniq -d
+		rm -f "$tmp"
+	elif [ ! -f "$1" ]; then
+		echo "File not found: $1"
+		return 1
+	else
+		sort "$1" | uniq -d
+	fi
 }
 
-# Show unique lines in a file
+# Unique lines (stdin if no file argument).
 
 uniqlines() {
-  if [ ! -f "$1" ]; then
-    echo "File not found: $1"
-    return 1
-  fi
-  sort "$1" | uniq -u
+	if [ -z "${1:-}" ]; then
+		local tmp
+		tmp=$(mktemp)
+		cat >"$tmp"
+		sort "$tmp" | uniq -u
+		rm -f "$tmp"
+	elif [ ! -f "$1" ]; then
+		echo "File not found: $1"
+		return 1
+	else
+		sort "$1" | uniq -u
+	fi
 }
 
 # Decode a base64 string
 
 debase() {
-  if [ -z "$1" ]; then
-    echo "No input provided"
-    return 1
-  fi
-  echo -n "$1" | base64 --decode
-  echo ""
+	if [ -z "$1" ]; then
+		echo "No input provided"
+		return 1
+	fi
+	echo -n "$1" | base64 --decode
+	echo ""
 }

@@ -1,5 +1,8 @@
 #!/usr/bin/env bats
 
+# make test exports DOTFILES_DIR; direct `bats test/function.bats` gets repo root from this file
+DOTFILES_DIR="${DOTFILES_DIR:-$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)}"
+
 load "${DOTFILES_DIR}/system/.function"
 load "${DOTFILES_DIR}/system/.function_text"
 

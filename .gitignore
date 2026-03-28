@@ -1,4 +1,7 @@
 system/.secrets
+install/Brewfile.local
+install/Codefile.local
+*.vsix
 config/karabiner/automatic_backups
 config/pgcli/history
 config/pgcli/log
@@ -9,3 +12,8 @@ system/.function_aws
 config/iterm2/AppSupport
 config/iterm2/sockets
 config/sublime-text/rbql_table_index_hex
+
+.extra
+.secrets
+.vscode
+system/.function_ai

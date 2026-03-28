@@ -47,11 +47,10 @@ fi
 
 unset DOTFILE EXTRAFILE
 
-# Ensure nvm is available
+# Expose nvm's node on PATH for GUI tools (user-writable; works Intel + Apple Silicon)
 if is-executable nvm; then
-  # make sublime work
-  test -e /usr/local/bin/node && rm /usr/local/bin/node
-  ln -sf "$(nvm which "$(nvm current)")" /usr/local/bin/node
+  mkdir -p "$HOME/.local/bin"
+  ln -sf "$(nvm which "$(nvm current)")" "$HOME/.local/bin/node"
 fi
 
 # Export

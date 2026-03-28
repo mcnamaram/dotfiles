@@ -7,7 +7,9 @@
 
 @test "json" {
 	ACTUAL=$(echo '{"x":1}' | json)
-	EXPECTED=$'{ "x": 1 }'
+	EXPECTED=$'{
+  "x": 1
+}'
 	[ "$ACTUAL" = "$EXPECTED" ]
 }
 

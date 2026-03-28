@@ -1,0 +1,13 @@
+# Copy to install/Brewfile.local (gitignored) on your work machine or private fork,
+# then run `make` — the Makefile runs this file after install/Brewfile if present.
+#
+# brew "automake"
+# brew "cmake"
+# brew "cython"
+# brew "gcc"
+# brew "gradle"
+# brew "grip"
+# brew "hyperkit"
+# brew "llvm"
+# brew "maven"
+# brew "sonar-scanner"

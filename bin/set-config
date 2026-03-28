@@ -1,13 +1,23 @@
 #!/usr/bin/env bash
 
+set -euo pipefail
+
 KEY="$1"
 VALUE="$2"
 FILE="$3"
 
 touch "$FILE"
 
-if grep -q "$1=" "$FILE"; then
-  sed "s@$KEY=.*@$KEY=\"$VALUE\"@" -i "$FILE"
+_replace_line() {
+	if [ "$(uname -s)" = "Darwin" ]; then
+		sed -i '' "s@^export $KEY=.*@export $KEY=\"$VALUE\"@" "$FILE"
+	else
+		sed -i "s@^export $KEY=.*@export $KEY=\"$VALUE\"@" "$FILE"
+	fi
+}
+
+if grep -q "^export $KEY=" "$FILE"; then
+	_replace_line
 else
-  echo "export $KEY=\"$VALUE\"" >> "$FILE"
+	echo "export $KEY=\"$VALUE\"" >> "$FILE"
 fi

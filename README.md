@@ -4,12 +4,15 @@
 
 ## Package overview
 
-- [Homebrew](https://brew.sh) (packages: [Brewfile](./install/Brewfile))
-- [homebrew-cask](https://formulae.brew.sh/cask/) (packages: [Caskfile](./install/Caskfile))
-- [Node.js + npm LTS](https://nodejs.org/en/download/) (packages: [npmfile](./install/npmfile))
+- [Homebrew](https://brew.sh) formulae and casks ([Brewfile](./install/Brewfile))
+- Optional machine-specific packages: copy [install/Brewfile.work.example](./install/Brewfile.work.example) to `install/Brewfile.local` (gitignored) or maintain a private fork
+- [Node.js + npm LTS](https://nodejs.org/en/download/) via nvm (packages: [npmfile](./install/npmfile))
+- Python via [pyenv](https://github.com/pyenv/pyenv) from Homebrew; `make` installs Python 3.12 and [requirements](./install/requirements.txt)
 - Latest Ruby (packages: [Gemfile](./install/Gemfile))
-- Latest Git, Bash, Python 3, GNU coreutils, curl
+- Latest Git, Bash, GNU coreutils, and k8s CLI tooling (`kubectl`, Helm, kustomize, kind, k6, stern, etc.)
+- Cursor extensions from [Codefile](./install/Codefile); optional [Codefile.work.example](./install/Codefile.work.example) → `install/Codefile.local`
 - `$EDITOR` (and Git editor) is [Cursor](https://cursor.sh/)
+- Default shell target is **Homebrew bash** (Intel `/usr/local` and Apple Silicon `/opt/homebrew` are both handled); run `make zsh` only if you want zsh added to `/etc/shells`
 
 ## Installation
 
@@ -31,7 +34,7 @@ On a sparkling fresh installation of macOS:
 The Xcode Command Line Tools includes `git` and `make` (not available on stock macOS).
 Then, install this repo with `curl` available:
 
-    bash -c "`curl -fsSL https://raw.githubusercontent.com/mcnamaram/dotfiles/master/remote-install.sh`"
+    bash -c "$(curl -fsSL https://raw.githubusercontent.com/mcnamaram/dotfiles/main/remote-install.sh)"
 
 This will clone (using `git`), or download (using `curl` or `wget`), this repo to `~/.dotfiles`. Alternatively, clone manually into the desired location:
 
@@ -41,6 +44,10 @@ Use the [Makefile](./Makefile) to install everything [listed above](#package-ove
 
     cd ~/.dotfiles
     make
+
+### Work vs home / local overlays
+
+The default [Brewfile](./install/Brewfile) and [Codefile](./install/Codefile) are aimed at a lean **home** setup. On your **work** Mac (or a private fork), add `install/Brewfile.local` and/or `install/Codefile.local`—see the `*.work.example` files in [install/](./install/). The Makefile applies locals automatically when those files exist.
 
 ## Everything else
 

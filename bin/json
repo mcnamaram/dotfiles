@@ -1,23 +1,32 @@
 #!/usr/bin/env bash
 
-OPT_COLOR=""
+set -euo pipefail
+
+OPT_COLOR=()
 
 while getopts ":c" OPT; do
 	case "$OPT" in
-		c) OPT_COLOR="--color";;
+		c) OPT_COLOR=(-C) ;;
 	esac
 done
 
-shift $((OPTIND-1))
+shift $((OPTIND - 1))
+
+if ! command -v jq >/dev/null 2>&1; then
+	echo "json: jq is required (brew install jq)" >&2
+	exit 127
+fi
 
 if [ $# -ge 1 ]; then
 	if [[ "$1" == http* ]]; then
-	  INPUT=$(curl --silent "$1")
+		INPUT=$(curl --silent "$1")
 	elif [ -f "$1" ]; then
 		INPUT=$(cat "$1")
+	else
+		INPUT="$1"
 	fi
 else
-  INPUT=$(cat -)
+	INPUT=$(cat -)
 fi
 
-echo "$INPUT" | underscore print "$OPT_COLOR"
+echo "$INPUT" | jq "${OPT_COLOR[@]}" .

@@ -16,5 +16,3 @@ config/iterm2/AppSupport
 config/iterm2/sockets
 config/sublime-text/rbql_table_index_hex
 
-# Design docs (local planning artifacts)
-docs/

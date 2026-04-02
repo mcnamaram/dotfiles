@@ -19,7 +19,6 @@ jq-syntax-highlighting.jq-syntax-highlighting
 jsynowiec.vscode-insertdatestring
 mads-hartmann.bash-ide-vscode
 mikestead.dotenv
-ms-kubernetes-tools.kind-vscode
 ms-kubernetes-tools.vscode-kubernetes-tools
 ms-python.debugpy
 ms-python.python

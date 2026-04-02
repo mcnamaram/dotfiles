@@ -73,5 +73,7 @@ alias dcomp='docker compose'
 alias kpow='_kpow '
 
 # python
-alias pyupdateall="pip install --upgrade pip && pip freeze --local | grep -v '^\-e' | cut -d = -f 1  | xargs -n1 pip install -U"
+alias pyupdate="pip install --upgrade pip"
+alias pyoutdated="pip list --outdated --not-required"
+alias pyupgradeall="pip install --upgrade pip && pip list --outdated --not-required --format=freeze | cut -d= -f1 | xargs -n1 pip install -U"
 

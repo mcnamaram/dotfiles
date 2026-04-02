@@ -125,7 +125,7 @@ npm uninstall -g dotenv nx task-master 2>/dev/null
 
 ```bash
 brew bundle check --file=~/.dotfiles/install/Brewfile
-echo $EDITOR                    # cursor -n -w
+echo $EDITOR                    # cursor --wait
 git config user.email           # mcnamaram@users.noreply.github.com
 secrets-manage list             # stored secrets
 type kindstart                  # should show function

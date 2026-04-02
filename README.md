@@ -1,67 +1,65 @@
 # mcnamaram's dotfiles
 
-> (originally forked from [Mathias’s dotfiles](https://mths.be/dotfiles)) and revamped with ideas from [webpro/dotfiles](https://github.com/webpro/dotfiles)
+> Originally forked from [Mathias's dotfiles](https://mths.be/dotfiles) and revamped with ideas from [webpro/dotfiles](https://github.com/webpro/dotfiles)
 
 ## Package overview
 
 - [Homebrew](https://brew.sh) (packages: [Brewfile](./install/Brewfile))
-- [homebrew-cask](https://formulae.brew.sh/cask/) (packages: [Caskfile](./install/Caskfile))
 - [Node.js + npm LTS](https://nodejs.org/en/download/) (packages: [npmfile](./install/npmfile))
-- Latest Ruby (packages: [Gemfile](./install/Gemfile))
 - Latest Git, Bash, Python 3, GNU coreutils, curl
 - `$EDITOR` (and Git editor) is [Cursor](https://cursor.sh/)
 
+## Architecture
+
+This is the **standard** (home) setup — TypeScript, Docker, KinD, Python, core tools.
+
+Work-specific config lives in a separate private overlay repo (`dotfiles-work`) that layers on top via symlinked `.work` files. See [how it works](#work-overlay) below.
+
 ## Installation
 
-This targets macOS but with some apt-get should be fine for \*nix.
-
-**Warning:** Don’t blindly use these settings. Always review the code and understand what you are getting into. Check these references for help:
-
-    * Lars Kappert [Getting Started With Dotfiles](https://medium.com/@webprolific/getting-started-with-dotfiles-43c3602fd789)
-    * Thoughtbot [Intro to Dotfiles](https://thoughtbot.com/upcase/videos/intro-to-dotfiles)
-    * ArchWiki [Dotfiles](https://wiki.archlinux.org/index.php/Dotfiles)
-
-_Use at your own risk!_ And please, _please_, triple check to not check in api-keys, passwords, and anything else sensitive that might linger in your configs.
+**Warning:** Don't blindly use these settings. Always review the code.
 
 On a sparkling fresh installation of macOS:
 
     sudo softwareupdate -i -a
     xcode-select --install
 
-The Xcode Command Line Tools includes `git` and `make` (not available on stock macOS).
-Then, install this repo with `curl` available:
+Then install with `curl`:
 
-    bash -c "`curl -fsSL https://raw.githubusercontent.com/mcnamaram/dotfiles/master/remote-install.sh`"
+    bash -c "`curl -fsSL https://raw.githubusercontent.com/mcnamaram/dotfiles/main/remote-install.sh`"
 
-This will clone (using `git`), or download (using `curl` or `wget`), this repo to `~/.dotfiles`. Alternatively, clone manually into the desired location:
+Or clone manually:
 
     git clone https://github.com/mcnamaram/dotfiles.git ~/.dotfiles
 
-Use the [Makefile](./Makefile) to install everything [listed above](#package-overview), and symlink [runcom](./runcom) and [config](./config) (using [stow](https://www.gnu.org/software/stow/)):
+Use the [Makefile](./Makefile) to install everything and symlink configs (via [stow](https://www.gnu.org/software/stow/)):
 
     cd ~/.dotfiles
     make
 
-## Everything else
+## Secrets
 
-Alternatively, you can have an additional, personal dotfiles repo at `~/.extra`. The runcom `.bash_profile` sources all `~/.extra/runcom/*.sh` files.
+Secrets are stored in macOS Keychain, never in plaintext files. Use the `secrets-manage` tool:
 
-My `~/.extra/runcom/custom.sh` looks something like this:
+    secrets-manage set openai api-key        # prompts for value
+    secrets-manage get openai api-key        # retrieves it
+    secrets-manage list                      # shows all dotfiles-managed secrets
 
-    # Git credentials
-    # Not in the repository, to prevent people from accidentally committing under my name
-    GIT_AUTHOR_NAME="Michael McNamara"
-    GIT_COMMITTER_NAME="$GIT_AUTHOR_NAME"
-    git config --global user.name "$GIT_AUTHOR_NAME"
-    GIT_AUTHOR_EMAIL="mcnamaram@example.com"
-    GIT_COMMITTER_EMAIL="$GIT_AUTHOR_EMAIL"
-    git config --global user.email "$GIT_AUTHOR_EMAIL"
+Shell startup reads secrets from Keychain automatically via `system/.secrets`.
 
-You could also use `~/.extra/runcom` scripts to override settings, functions, and aliases from my dotfiles repository. It’s probably better to [fork this repository](https://github.com/mcnamaram/dotfiles/fork) instead, though.
+## Work overlay
 
-### ssshhh...and use a keepass or something
+Work-specific config lives in a separate private repo. When present, it layers on top:
 
-You can put your custom secret settings, such as Git credentials in the `system/.secrets` file which will be sourced from `.bash_profile` automatically. This file is in `.gitignore`.
+1. `.work` files in `system/` are sourced after standard files (can override functions)
+2. Git config uses `[includeIf]` to apply work email/hooks only in work repos
+3. Work packages install via separate Brewfile/Codefile in the overlay
+
+To set up work on top of standard:
+
+    git clone <private-overlay-repo> ~/.dotfiles-work
+    cd ~/.dotfiles-work
+    make work
 
 ## Post-install
 
@@ -76,19 +74,18 @@ Open a new shell and run:
     Usage: dotfiles <command>
 
     Commands:
-       clean            Clean up caches (brew, npm, gem, rvm)
+       clean            Clean up caches (brew, nvm)
        dock             Apply macOS Dock settings
-       edit             Open dotfiles in IDE (code) and Git GUI (stree)
+       edit             Open dotfiles in IDE
        help             This help message
        macos            Apply macOS system defaults
        test             Run tests
-       update           Update packages and pkg managers (OS, brew, npm, gem)
+       update           Update packages and pkg managers (OS, brew, npm)
 
 ## Additional resources
 
 - [Awesome Dotfiles](https://github.com/webpro/awesome-dotfiles)
 - [Homebrew](https://brew.sh)
-- [Homebrew Cask](http://caskroom.io)
 - [Bash prompt](https://wiki.archlinux.org/index.php/Color_Bash_Prompt)
 - [Solarized Color Theme for GNU ls](https://github.com/seebi/dircolors-solarized)
 

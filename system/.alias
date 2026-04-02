@@ -40,8 +40,6 @@ alias psgrep="psgrep -i"
 
 alias grip="grip -b"
 
-alias intellij='open /Applications/IntelliJ\ IDEA\ CE.app/ '
-
 # Can't spell
 alias eixt='exit'
 alias gits='git s'
@@ -74,19 +72,6 @@ alias dcomp='docker compose'
 # kube
 alias kpow='_kpow '
 
-# minikube
-alias minienv='eval $(minikube docker-env)'
-alias deminienv='eval $(minikube docker-env -u)'
-
-# gradle
-alias g='./gradlew -Djava.net.preferIPv4Stack=true '
-alias gbuild='g clean build'
-alias grun='g bootRun'
-alias gbrun='gbuild && grun'
-
 # python
 alias pyupdateall="pip install --upgrade pip && pip freeze --local | grep -v '^\-e' | cut -d = -f 1  | xargs -n1 pip install -U"
 
-# bash functions
-# shellcheck source=/dev/null
-test -e "${HOME}/.functions" && source "${HOME}/.functions"

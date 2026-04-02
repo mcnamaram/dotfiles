@@ -10,7 +10,6 @@ whitespace = fix
 
 excludesfile = ~/.config/git/ignore
 attributesfile = ~/.config/git/attributes
-hooksPath = ~/.config/git/hooks
 
 editor = cursor --wait
 filemode = false
@@ -18,18 +17,12 @@ whitespace = trailing-space,space-before-tab,tab-in-indent,cr-at-eol,space-at-eo
 
 # Make `git rebase` safer on macOS
 
-# More info: <http://www.git-tower.com/blog/make-git-rebase-safe-on-osx/>
-
 trustctime = false
 autocrlf = input
 untrackedCache = true
 pager = delta --features=diff-so-fancy --dark
 
 [commit]
-
-# https://help.github.com/articles/signing-commits-using-gpg/
-
-# TODO I want to do this, but not just yet
 
 gpgsign = false
 
@@ -46,8 +39,6 @@ lineNumber = true
 autocorrect = 3
 
 [push]
-
-# current 2.x default
 
 default = simple
 
@@ -81,22 +72,14 @@ configedit = config --global -e
 
 ## Logging/status
 
-# View abbreviated SHA, description, and history graph of the latest 20 commits
-
 l = log --pretty=oneline -n 20 --graph --abbrev-commit
 
 lc = log ORIG_HEAD.. --stat --no-merges
 lg = log --graph --pretty=format:'%Cred%h%Creset -%C(yellow)%d%Creset %s %Cgreen(%cr) %C(bold blue)<%an>%Creset' --abbrev-commit --date=relative
 
-# what was the last logged commit
-
 last = log -n 1 HEAD
 
-# View the current working tree status using the short format
-
 s = status -s
-
-# make the bad go away
 
 hardreset = reset HEAD --hard
 
@@ -104,11 +87,7 @@ hardreset = reset HEAD --hard
 
 changes = !"git diff-index --quiet HEAD -- || clear; git diff --patch-with-stat"
 
-# `git changesn $number` shows the diff between the state `$number` revisions ago and the current state
-
 changesn = !"f() { git diff --patch-with-stat HEAD~$1; }; git diff-index --quiet HEAD -- || clear; f"
-
-# check out what changed in the last two commits; ignores current state
 
 review = diff HEAD^ HEAD
 
@@ -128,20 +107,14 @@ alias = !"git aliases"
 
 ## fetching/pulling
 
-# Fetch and prune
-
 f = fetch
 
 ## fetch and prune tags
 
 pt = !git tag -l | xargs git tag -d && git fetch -t
 
-# Pull in remote changes for the current repository and all its submodules
-
 p = !"git pull; git submodule update --recursive --remote"
 all = !git stash && git fetch && git pull && git stash pop
-
-# Clone a repository including all submodules
 
 c = clone --recursive
 
@@ -150,26 +123,15 @@ cob = checkout -b
 
 ## committing/pushing
 
-# commit with a message
-
 cim = commit -m
-ci = '!git-ci'  # found in .dotfiles/bin/git-ci
-
-
-# Commit all changes and mark as WIP
+ci = '!git-ci'
 
 wip = "!wip() { git add -A && git commit -m \"chore(squash): squash me\" --no-verify; }; wip"
-
-# Amend the currently staged files to the latest commit
 
 amend = "!f() { if command -v aicommit2 >/dev/null 2>&1 && [ \"$#\" -eq 0 ]; then aicommit2 --amend -a -s -y; else git commit -a --amend \"$@\"; fi; }; f"
 remend = commit -a --amend --reuse-message=HEAD
 
-# Credit an author on the latest commit
-
 credit = "!credit() { git commit --amend --author \"$1 <$2>\" -C HEAD; }; credit"
-
-# Interactive rebase with the given number of latest commits
 
 squash = "!squash() { git rebase -i HEAD~$1; }; squash"
 
@@ -177,75 +139,50 @@ ra = rebase --abort
 rc = rebase --continue
 rs = rebase --skip
 
-# Remove the old tag with this name and tag the latest commit with it.
-
 retag = "!retag() { git tag -d $1 && git push origin :refs/tags/$1 && git tag $1; }; retag"
 
-# Remove branches that have already been merged with main
+# Delete local branches whose upstream was removed on the remote (: gone after fetch --prune).
+# Uses branch -D (not -d): squash merges leave tips not reachable from main, so -d always fails and feels like double confirmation with xargs -p.
+# Optional arg: remote to fetch (default origin).
 
-# a.k.a. ‘delete merged’
+dm = "!dm() { git fetch \"${1-origin}\" --prune 2>/dev/null || true; git branch -vv | grep ': gone]' | grep -v '^\\*' | sed -E 's/^[ *]+([^ ]+) +.*/\\1/' | xargs -pn1 git branch -D; }; dm"
 
-dm = "!dm() { git branch --merged ${1-main} | grep -v " ${1-main}$" | xargs -rpn1 git branch -d; }; dm"
-
-# assume files as unchanged to remove from tracking locally (e.g. line endings changed you don't want to check back in)
 ignore-files = "!f() { git update-index --assume-unchanged "$@"; }; f"
 
-# stop ignoring files locally
 track-files = "!f() { git update-index --no-assume-unchanged "$@"; }; f"
 
-# remove other branches
+# Disable line ending conversion for current repo
+no-crlf = "!echo '* -text' >> .git/info/attributes && echo 'Line ending conversion disabled for this repo'"
 
 bd = "!git branch -d $1 && echo '' && git branch -l && echo ' (Removed) $1'"
 bdf = "!git branch -D $1 && echo '' && git branch -l && echo ' (RemoveD) $1'"
 bdlist = "!f() { for branch in "$@"; do git branch -D $branch && echo ' (RemoveD) $branch'; done; }; f"
 
-# short push
-
 pu = push
 pun = push --no-verify
 puta = push --follow-tags
-
-# short push --force
 
 puf = push --force-with-lease
 pufn = push --force-with-lease --no-verify
 
 ## searching
 
-# Find branches containing commit
-
 fb = "!fb() { git branch -a --contains $1; }; fb"
-
-# Find tags containing commit
 
 ft = "!ft() { git describe --always --contains $1; }; ft"
 
-# Find commits by source code
-
 fc = "!fc() { git log --pretty=format:'%C(yellow)%h %Cblue%ad %Creset%s%Cgreen [%cn] %Cred%d' --decorate --date=short -S$1; }; fc"
 
-# Find commits by commit message
-
 fm = "!fm() { git log --pretty=format:'%C(yellow)%h %Cblue%ad %Creset%s%Cgreen [%cn] %Cred%d' --decorate --date=short --grep=$1; }; fm"
-
-# List contributors with number of commits
 
 contrib = shortlog --summary --numbered
 	rebase-main = !git fetch origin && git rebase origin/main
 
 [diff]
 
-# Detect copies as well as renames
-
 renames = copies
 
-# Enable an experimental heuristic that shifts the hunk boundary in an
-
-# attempt to make the resulting patch easier to read.
-
 indentHeuristic = true
-
-# use 'i' and 'w' for index and working tree instead of 'a' and 'b'
 
 mnemonicprefix = true
 	tool = cursor
@@ -253,16 +190,11 @@ colorMoved = default
 whitespace = -space-at-eol, -space-before-tab, indent-with-non-tab, cr-at-eol
 ignoreWhitespaceChange = true
 
-[diff "sopsdiffer"]
-textconv = sops -d
-
 [diff "bin"]
 
 # Use `hexdump` to diff binary files
 
 textconv = hexdump -v -C
-
-# TODO move next few sections to extra to pick the tool (e.g. atom v. subl)
 
 [difftool]
 prompt = false
@@ -275,8 +207,6 @@ tool = cursor
 conflictstyle = diff3
 defaultToUpstream = true
 
-# Include summaries of merged commits in newly created merge commit messages
-
 log = true
 
 [mergetool]
@@ -287,10 +217,6 @@ cmd = cursor --wait $MERGED
 trustExitCode = false
 
 [color]
-
-# Use colors in Git commands that are capable of colored output when
-
-# outputting to the terminal. (This is the default setting in Git ≥ 1.8.4.)
 
 ui = auto
 
@@ -316,10 +242,14 @@ newHighlight = green bold 22
 
 [user]
 	name = Michael McNamara
-	email = mcnamaram@users.noreply.github.com
+	email = mike.mcnamara@arcadia.io
+
+# Work email/hooks applied conditionally via overlay
+[includeIf "hasconfig:remote.*.url:*arcadia*"]
+	path = ~/.dotfiles-work/config/git/config.work
 
 [init]
-defaultBranch = develop
+defaultBranch = main
 
 [delta]
 features = diff-so-fancy line-numbers decorations inline line-numbers diff-highlight

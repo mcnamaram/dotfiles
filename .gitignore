@@ -1,11 +1,20 @@
+# Secrets (never track plaintext)
 system/.secrets
+
+# Work overlay files (symlinked from dotfiles-work)
+system/.*.work
+
+# Runtime / generated
 config/karabiner/automatic_backups
-config/pgcli/history
-config/pgcli/log
+config/pgcli/
 config/pip/pip.conf
 install/Brewfile.lock.json
-# too many secret stuffs
+
+# Work-specific (gitignored even if placed here manually)
 system/.function_aws
 config/iterm2/AppSupport
 config/iterm2/sockets
 config/sublime-text/rbql_table_index_hex
+
+# Design docs (local planning artifacts)
+docs/

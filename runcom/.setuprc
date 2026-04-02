@@ -17,9 +17,9 @@ fi
 # Make utilities available
 PATH="$DOTFILES_DIR/bin:$PATH"
 
-# Source the dotfiles (order matters)
-for DOTFILE in "$DOTFILES_DIR"/system/.{env,function,function_*,path,alias,grep,completion,prompt_bash,nvm,iterm,pyenv,rbenv,direnv,secrets,sdkman}; do
-  [ -f "$DOTFILE" ] && source "$DOTFILE"
+# Source standard dotfiles (order matters; skip .work overlay files)
+for DOTFILE in "$DOTFILES_DIR"/system/.{env,function,function_*,path,alias,grep,completion,prompt_bash,nvm,iterm,pyenv,direnv,secrets,sdkman}; do
+  [[ -f "$DOTFILE" && "$DOTFILE" != *.work ]] && source "$DOTFILE"
 done
 
 if is-macos; then
@@ -27,6 +27,11 @@ if is-macos; then
     [ -f "$DOTFILE" ] && source "$DOTFILE"
   done
 fi
+
+# Source .work overlay files (from dotfiles-work, symlinked into system/)
+for DOTFILE in "$DOTFILES_DIR"/system/.*.work; do
+  [ -f "$DOTFILE" ] && source "$DOTFILE"
+done
 
 # Set LSCOLORS
 eval "$(dircolors -b "$DOTFILES_DIR"/system/.dir_colors)"
@@ -49,7 +54,6 @@ unset DOTFILE EXTRAFILE
 
 # Ensure nvm is available
 if is-executable nvm; then
-  # make sublime work
   test -e /usr/local/bin/node && rm /usr/local/bin/node
   ln -sf "$(nvm which "$(nvm current)")" /usr/local/bin/node
 fi

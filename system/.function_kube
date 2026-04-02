@@ -1,6 +1,9 @@
 #!/usr/bin/env bash
 
-# kubectl
+# Kubernetes helpers — standard (KinD-focused).
+# Work-specific cluster helpers live in .function_kube.work
+
+# kubectl grep helpers
 _kpow() {
   local SEARCH=${1:-'/'}
   kubectl get po -owide --field-selector status.phase!=Succeeded | grep "$SEARCH"
@@ -80,16 +83,7 @@ kapodvershort() {
   } | column -t -s,
 }
 
-# Function to clean up failed pods in all namespaces (uncomment to use)
-# kcleanup() {
-#   for x in $(kubectl get namespace -o=custom-columns=name:.metadata.name --no-headers); do
-#     for y in $(kubectl -n "$x" get po --field-selector=status.phase=Failed -o name); do
-#       kubectl delete -n "$x" "$y";
-#     done;
-#   done
-# }
-
-# port forward to a service. need service name and ports
+# Port forward to a service
 kforward() {
   local SERVICE=$1
   local LOCAL_PORT=$2
@@ -111,25 +105,14 @@ kforward() {
   kubectl $NS port-forward "$POD" "$LOCAL_PORT:$REMOTE_PORT"
 }
 
-ministart() {
-  minikube start --disk-size='120g' --memory='10g' --cpus=8 &&
-    eval $(minikube docker-env) &&
-    source "$HOME/dev/secrets/minisetup.sh"
-}
-
-# Minikube stop and delete function
-minidie() {
-  eval $(minikube docker-env -u) &&
-    minikube delete
-}
-
+# KinD cluster lifecycle
 kindstart() {
   cat <<EOF | kind create cluster --config=-
 kind: Cluster
 apiVersion: kind.x-k8s.io/v1alpha4
 nodes:
 - role: control-plane
-  kubeadmConfigPatches:
+  kubeAdmConfigPatches:
   - |
     kind: InitConfiguration
     nodeRegistration:

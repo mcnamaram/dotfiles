@@ -6,6 +6,10 @@ NVM_DIR := $(HOME)/.nvm
 export XDG_CONFIG_HOME := $(HOME)/.config
 export STOW_DIR := $(DOTFILES_DIR)
 
+# Detect Homebrew prefix (Apple Silicon vs Intel)
+BREW_PREFIX := $(shell /opt/homebrew/bin/brew --prefix 2>/dev/null || /usr/local/bin/brew --prefix 2>/dev/null || echo /usr/local)
+BASH := $(BREW_PREFIX)/bin/bash
+
 .PHONY: test
 
 all: $(OS)
@@ -14,7 +18,7 @@ macos: sudo core-macos packages link set-default-shell
 
 linux: core-linux link set-default-shell
 
-core-macos: brew bash git sdkman nvm ruby python zsh
+core-macos: brew bash git sdkman nvm python
 
 core-linux:
 	apt-get update
@@ -31,7 +35,7 @@ sudo:
 	sudo -v
 	while true; do sudo -n true; sleep 240; kill -0 "$$" || exit; done 2>/dev/null &
 
-packages: brew-packages jabba-jdk cursor-exts node-packages gems python-packages aws
+packages: brew-packages cursor-exts node-packages
 
 link: stow-$(OS)
 	for FILE in $$(\ls -A runcom); do if [ -f $(HOME)/$$FILE -a ! -h $(HOME)/$$FILE ]; then mv -v $(HOME)/$$FILE{,.bak}; fi; done
@@ -46,18 +50,12 @@ unlink: stow-$(OS)
 
 brew:
 	is-executable brew || curl -fsSL https://raw.githubusercontent.com/Homebrew/install/master/install.sh | bash
-	eval "$$(/opt/homebrew/bin/brew shellenv)"
+	eval "$$($(BREW_PREFIX)/bin/brew shellenv)"
 	brew analytics off
 
-bash: BASH=/usr/local/bin/bash
 bash: SHELLS=/private/etc/shells
 bash: brew
 	if ! grep -q $(BASH) $(SHELLS); then brew install bash bash-completion@2 pcre pcre2 && sudo tee -a $(SHELLS) <<<$(BASH); fi
-
-zsh: ZSH=/usr/local/bin/zsh
-zsh: SHELLS=/private/etc/shells
-zsh: brew
-	if ! grep -q $(ZSH) $(SHELLS); then brew install zsh zsh-completions pcre pcre2 && sudo tee -a $(SHELLS) <<<$(ZSH); fi
 
 set-default-shell: bash
 	@echo "Set bash as the default shell for the user"
@@ -71,14 +69,10 @@ sdkman:
 
 iterm2:
 	curl -L https://iterm2.com/shell_integration/bash -o ~/.iterm2_shell_integration.bash && source ~/.iterm2_shell_integration.bash
-	# curl -L https://iterm2.com/shell_integration/zsh -o ~/.iterm2_shell_integration.zsh && source ~/.iterm2_shell_integration.zsh
 
 nvm:
 	if ! [ -d $(NVM_DIR)/.git ]; then git clone https://github.com/creationix/nvm.git $(NVM_DIR); fi
 	. $(NVM_DIR)/nvm.sh; nvm install --lts --latest-npm
-
-ruby: brew
-	brew install ruby
 
 python: brew
 	brew install python@3.12
@@ -86,12 +80,12 @@ python: brew
 brew-packages: brew
 	brew bundle --file=$(DOTFILES_DIR)install/Brewfile
 	@-is-executable kubectx && ( \
-	  rm -f /usr/local/bin/kctx; \
-	  rm -f /usr/local/bin/kns; \
+	  rm -f $(BREW_PREFIX)/bin/kctx; \
+	  rm -f $(BREW_PREFIX)/bin/kns; \
 	  brew unlink kubectx; \
 	  version=$$(brew info kubectx --json | jq -r '.[].versions.stable'); \
-	  ln -s $$(brew --prefix)/Cellar/kubectx/$$version/bin/kubectx /usr/local/bin/kctx; \
-	  ln -s $$(brew --prefix)/Cellar/kubectx/$$version/bin/kubens /usr/local/bin/kns; \
+	  ln -s $$(brew --prefix)/Cellar/kubectx/$$version/bin/kubectx $(BREW_PREFIX)/bin/kctx; \
+	  ln -s $$(brew --prefix)/Cellar/kubectx/$$version/bin/kubens $(BREW_PREFIX)/bin/kns; \
 	  ln -s $$(brew --prefix)/Cellar/kubectx/$$version/etc/bash_completion.d/kubectx $$(brew --prefix)/etc/bash_completion.d/kubectx; \
 	  ln -s $$(brew --prefix)/Cellar/kubectx/$$version/etc/bash_completion.d/kubens $$(brew --prefix)/etc/bash_completion.d/kubens; \
 	)
@@ -114,15 +108,15 @@ cursor-exts: brew
 node-packages: nvm
 	. $(NVM_DIR)/nvm.sh; npm install --location global $(shell cat install/npmfile)
 
-gems: ruby
-	export PATH="/usr/local/opt/ruby/bin:$(PATH)"; gem install $(shell cat install/Gemfile)
-
-python-packages: python
-	pip3 install -r install/requirements.txt
-
 aws: brew
 	is-executable aws || brew install awscli
 	brew link --overwrite awscli
+
+secrets:
+	@echo "Run secrets-manage to store shell secrets in Keychain."
+	@echo "  secrets-manage set openai api-key"
+	@echo "  secrets-manage set github personal-token"
+	@echo "Or bulk import: secrets-manage import setup/secrets.list"
 
 test:
 	bats test/*.bats

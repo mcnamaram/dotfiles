@@ -1,18 +1,5 @@
 #!/usr/bin/env bash
 
-# Start a web server in the specified directory (default: current directory)
-
-srv() {
-  local DIR=${1:-.}
-  local AVAILABLE_PORT=$(get-port)
-  local PORT=${2:-$AVAILABLE_PORT}
-  if [ "$PORT" -le 1024 ]; then
-    sudo -v
-  fi
-  open "http://localhost:$PORT"
-  superstatic "$DIR" -p "$PORT"
-}
-
 # Get IP address from hostname
 
 hostname2ip() {

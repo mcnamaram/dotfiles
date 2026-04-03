@@ -18,6 +18,7 @@ fi
 
 prepend-path "/bin"
 prepend-path "/usr/bin"
+prepend-path "/usr/local/bin"
 prepend-path "$BREW_PREFIX/bin"
 prepend-path "$BREW_PREFIX/sbin"
 

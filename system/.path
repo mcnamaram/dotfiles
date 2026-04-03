@@ -1,49 +1,51 @@
 #!/usr/bin/env bash
 
-# Function to prepend directories to PATH if they exist
 prepend-path() {
-  if [ -d "$1" ]; then
-    PATH="$1:$PATH"
-  fi
+  [ -d "$1" ] && PATH="$1:$PATH"
 }
 
-# Retrieve system path from getconf, otherwise use current $PATH
+# Start from system path
 if is-executable getconf; then
-  SYSTEM_PATH=$(getconf PATH)
-else
-  SYSTEM_PATH="$PATH"
+  PATH=$(getconf PATH)
 fi
-PATH="$SYSTEM_PATH"
 
-# Prepend new items to path (if directory exists)
+# Homebrew (detect arch)
+if [ -d "/opt/homebrew" ]; then
+  BREW_PREFIX="/opt/homebrew"
+else
+  BREW_PREFIX="/usr/local"
+fi
+
 prepend-path "/bin"
 prepend-path "/usr/bin"
-prepend-path "/usr/local/bin"
-prepend-path "$HOME/.rbenv/bin"
-prepend-path "/opt/homebrew/opt/ruby/bin"
-prepend-path "/opt/homebrew/opt/openssl/bin"
-prepend-path "/opt/homebrew/opt/coreutils/libexec/gnubin"
-prepend-path "/opt/homebrew/opt/gnu-getopt/bin"
-prepend-path "/opt/homebrew/opt/gnu-sed/libexec/gnubin"
-prepend-path "/opt/homebrew/opt/grep/libexec/gnubin"
+prepend-path "$BREW_PREFIX/bin"
+prepend-path "$BREW_PREFIX/sbin"
+
+# GNU tools (override macOS builtins)
+prepend-path "$BREW_PREFIX/opt/openssl/bin"
+prepend-path "$BREW_PREFIX/opt/coreutils/libexec/gnubin"
+prepend-path "$BREW_PREFIX/opt/gnu-getopt/bin"
+prepend-path "$BREW_PREFIX/opt/gnu-sed/libexec/gnubin"
+prepend-path "$BREW_PREFIX/opt/grep/libexec/gnubin"
+
+# Languages
 prepend-path "$GOPATH"
 prepend-path "$GOBIN"
-prepend-path "$HOME/.jenv/bin"
 prepend-path "$PYENVBIN"
 prepend-path "$POETRYBIN"
+
+# Dotfiles and user bin
 prepend-path "$DOTFILES_DIR/bin"
 prepend-path "$HOME/bin"
+
+# System admin
 prepend-path "/sbin"
 prepend-path "/usr/sbin"
-prepend-path "/opt/homebrew/bin"
-prepend-path "/opt/homebrew/sbin"
 
-# Remove duplicates (preserving prepended items)
-# Source: http://unix.stackexchange.com/a/40755
+# Deduplicate
 PATH=$(echo -n "$PATH" | awk -v RS=: -v ORS=: '{ if (!seen[$0]++) print $0 }' | sed 's/:$//')
 
-# Export the updated PATH
 export PATH
 
-# Set the PATH for GUI applications
+# Make PATH available to GUI apps
 launchctl setenv PATH "$PATH"

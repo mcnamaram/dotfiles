@@ -1,0 +1,40 @@
+#!/usr/bin/env bash
+
+# Generic AWS helpers — work-specific wrappers live in .function_aws.work
+
+switch_aws_profile() {
+  local profile=$1
+  local export_env=${2:-false}
+
+  if aws configure list-profiles | grep -q "^$profile$"; then
+    clear_assumed_role || true
+    export AWS_PROFILE=$profile
+
+    if [[ "$export_env" == "true" || "$export_env" == "env" ]]; then
+      aws configure export-credentials --profile "$profile" --format env | \
+        sed 's/^export //' > .env.sso
+      echo "Switched to AWS profile '$profile' and exported credentials to .env.sso"
+    else
+      echo "Switched to AWS profile '$profile'"
+    fi
+  else
+    echo "Profile '$profile' does not exist. Please configure it using aws configure sso."
+  fi
+}
+
+docker_login_ecr() {
+  local account_id=$1
+  local region=${2:-us-east-1}
+  if [ -z "$account_id" ]; then
+    echo "Usage: docker_login_ecr <account_id> [region]"
+    return 1
+  fi
+  aws ecr get-login-password --region "$region" | docker login --username AWS --password-stdin "$account_id.dkr.ecr.$region.amazonaws.com"
+}
+
+clear_assumed_role() {
+  unset AWS_ACCESS_KEY_ID
+  unset AWS_SECRET_ACCESS_KEY
+  unset AWS_SESSION_TOKEN
+  echo "Cleared assumed role credentials. SSO profile credentials will be used."
+}

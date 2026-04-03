@@ -1,6 +1,3 @@
-# Secrets (never track plaintext)
-system/.secrets
-
 # Work overlay files (symlinked from dotfiles-work)
 system/.*.work
 
@@ -11,7 +8,6 @@ config/pip/pip.conf
 install/Brewfile.lock.json
 
 # Work-specific (gitignored even if placed here manually)
-system/.function_aws
 config/iterm2/AppSupport
 config/iterm2/sockets
 config/sublime-text/rbql_table_index_hex

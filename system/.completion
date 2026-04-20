@@ -28,6 +28,10 @@ if [ -n "$BASH_VERSION" ]; then
   (is-executable npm) && source <(npm completion)
   (is-executable kubectl) && source <(kubectl completion bash)
   (is-executable helm) && source <(helm completion bash)
+
+  for f in /opt/homebrew/opt/kubectx/etc/bash_completion.d/*; do
+    [ -f "$f" ] && source "$f"
+  done
   (is-executable poetry) && eval "$(poetry completions bash)"
 fi
 

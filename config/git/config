@@ -142,10 +142,23 @@ rs = rebase --skip
 retag = "!retag() { git tag -d $1 && git push origin :refs/tags/$1 && git tag $1; }; retag"
 
 # Delete local branches whose upstream was removed on the remote (: gone after fetch --prune).
+# Phase 1: prompt to remove worktrees whose branch remote is gone (freeing them for deletion).
+# Phase 2: delete non-worktree branches whose remote is gone.
 # Uses branch -D (not -d): squash merges leave tips not reachable from main, so -d always fails and feels like double confirmation with xargs -p.
 # Optional arg: remote to fetch (default origin).
 
-dm = "!dm() { git fetch \"${1-origin}\" --prune 2>/dev/null || true; git branch -vv | grep ': gone]' | grep -v '^\\*' | sed -E 's/^[ *]+([^ ]+) +.*/\\1/' | xargs -pn1 git branch -D; }; dm"
+	dm = "!dm() { \
+		git fetch \"${1-origin}\" --prune 2>/dev/null || true; \
+		git branch -vv | grep '^[+]' | grep ': gone]' | sed -E 's/^[+ ]+([^ ]+) +.*/\\1/' | while read -r branch; do \
+			wtpath=$(git worktree list | grep \"\\[$branch\\]\" | awk '{print $1}'); \
+			if [ -n \"$wtpath\" ]; then \
+				printf 'Remove worktree %s (branch %s, remote gone)? [y/N] ' \"$wtpath\" \"$branch\"; \
+				read -r ans </dev/tty; \
+				case \"$ans\" in [yY]*) git worktree remove \"$wtpath\" && echo \"  Removed worktree.\";; esac; \
+			fi; \
+		done; \
+		git branch -vv | grep ': gone]' | grep -v '^[*+]' | sed -E 's/^[ *+]+([^ ]+) +.*/\\1/' | xargs -pn1 git branch -D; \
+	}; dm"
 
 ignore-files = "!f() { git update-index --assume-unchanged "$@"; }; f"
 
@@ -242,7 +255,7 @@ newHighlight = green bold 22
 
 [user]
 	name = Michael McNamara
-	email = mike.mcnamara@arcadia.io
+	email = mcnamaram@users.noreply.github.com
 
 # Work email/hooks applied conditionally via overlay
 [includeIf "hasconfig:remote.*.url:*arcadia*"]

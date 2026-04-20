@@ -79,16 +79,6 @@ python: brew
 
 brew-packages: brew
 	brew bundle --file=$(DOTFILES_DIR)install/Brewfile
-	@-is-executable kubectx && ( \
-	  rm -f $(BREW_PREFIX)/bin/kctx; \
-	  rm -f $(BREW_PREFIX)/bin/kns; \
-	  brew unlink kubectx; \
-	  version=$$(brew info kubectx --json | jq -r '.[].versions.stable'); \
-	  ln -s $$(brew --prefix)/Cellar/kubectx/$$version/bin/kubectx $(BREW_PREFIX)/bin/kctx; \
-	  ln -s $$(brew --prefix)/Cellar/kubectx/$$version/bin/kubens $(BREW_PREFIX)/bin/kns; \
-	  ln -s $$(brew --prefix)/Cellar/kubectx/$$version/etc/bash_completion.d/kubectx $$(brew --prefix)/etc/bash_completion.d/kubectx; \
-	  ln -s $$(brew --prefix)/Cellar/kubectx/$$version/etc/bash_completion.d/kubens $$(brew --prefix)/etc/bash_completion.d/kubens; \
-	)
 
 sdkman-jdk: sdkman
 	$(shell . ~/.sdkman/bin/sdkman-init.sh && \

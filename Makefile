@@ -35,7 +35,7 @@ sudo:
 	sudo -v
 	while true; do sudo -n true; sleep 240; kill -0 "$$" || exit; done 2>/dev/null &
 
-packages: brew-packages cursor-exts node-packages
+packages: brew-packages node-packages
 
 link: stow-$(OS)
 	for FILE in $$(\ls -A runcom); do if [ -f $(HOME)/$$FILE -a ! -h $(HOME)/$$FILE ]; then mv -v $(HOME)/$$FILE{,.bak}; fi; done
@@ -78,7 +78,7 @@ python: brew
 	brew install python@3.12
 
 brew-packages: brew
-	brew bundle --file=$(DOTFILES_DIR)install/Brewfile
+	brew bundle --file=$(DOTFILES_DIR)install/Brewfile.$(OS)
 
 sdkman-jdk: sdkman
 	$(shell . ~/.sdkman/bin/sdkman-init.sh && \
@@ -87,13 +87,6 @@ sdkman-jdk: sdkman
 	sdk use java $$jdk_ver && \
 	sdk default java $$jdk_ver)
 
-cursor-exts: brew
-	@-is-executable cursor && for EXT in $$(cat install/Codefile); do \
-		if ! cursor --install-extension $$EXT; then \
-			curl -sSL "https://marketplace.visualstudio.com/_apis/public/gallery/publishers/$${EXT%%.*}/vsextensions/$${EXT##*.}/latest/vspackage" -o "$${EXT}.vsix"; \
-			cursor --install-extension "$${EXT}.vsix"; \
-		fi; \
-	done
 
 node-packages: nvm
 	. $(NVM_DIR)/nvm.sh; npm install --location global $(shell cat install/npmfile)

@@ -4,10 +4,10 @@
 
 ## Package overview
 
-- [Homebrew](https://brew.sh) (packages: [Brewfile](./install/Brewfile))
+- [Homebrew](https://brew.sh) (packages: [Brewfile.macos](./install/Brewfile.macos) / [Brewfile.linux](./install/Brewfile.linux))
 - [Node.js + npm LTS](https://nodejs.org/en/download/) (packages: [npmfile](./install/npmfile))
 - Latest Git, Bash, Python 3, GNU coreutils, curl
-- `$EDITOR` (and Git editor) is [Cursor](https://cursor.sh/)
+- `$EDITOR` (and Git editor) is [Cursor](https://cursor.sh/) on macOS, `vim` on Linux/WSL
 
 ## Architecture
 
@@ -32,7 +32,7 @@ Or clone manually:
 
     git clone https://github.com/mcnamaram/dotfiles.git ~/.dotfiles
 
-Use the [Makefile](./Makefile) to install everything and symlink configs (via [stow](https://www.gnu.org/software/stow/)):
+The Makefile auto-detects macOS vs Linux. On Linux/WSL it runs `apt-get` instead of Homebrew and uses [Brewfile.linux](./install/Brewfile.linux) (no macOS casks). Use it to install everything and symlink configs (via [stow](https://www.gnu.org/software/stow/)):
 
     cd ~/.dotfiles
     make
@@ -53,7 +53,7 @@ Work-specific config lives in a separate private repo. When present, it layers o
 
 1. `.work` files in `system/` are sourced after standard files (can override functions)
 2. Git config uses `[includeIf]` to apply work email/hooks only in work repos
-3. Work packages install via separate Brewfile/Codefile in the overlay
+3. Work packages install via a separate Brewfile in the overlay
 
 To set up work on top of standard:
 
@@ -63,7 +63,7 @@ To set up work on top of standard:
 
 ## Post-install
 
-Open a new shell and run:
+**macOS only:** Open a new shell and run:
 
 - `dotfiles dock` (set [Dock items](./macos/dock.sh))
 - `dotfiles macos` (set [macOS defaults](./macos/defaults.sh))

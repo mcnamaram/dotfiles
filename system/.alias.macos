@@ -1,5 +1,19 @@
 #!/usr/bin/env bash
 
+# Network (macOS-specific)
+
+alias ipl="ifconfig | grep -Eo 'inet (addr:)?([0-9]*\.){3}[0-9]*' | grep -Eo '([0-9]*\.){3}[0-9]*' | grep -v '127.0.0.1'"
+alias ifactive="ifconfig | grep -A 1 'status: active'"
+alias sniff="sudo ngrep -d 'en1' -t '^(GET|POST) ' 'tcp and port 80'"
+alias httpdump="sudo tcpdump -i en1 -n -s 0 -w - | grep -a -o -E \"Host\: .*|GET \/.*\""
+
+# macOS date syntax for crontime (GNU date on Linux uses different flags)
+alias crontime='echo "$(date -u -v "+2M" +"%M %H") * * *"'
+
+# kube (Apple Silicon Homebrew path; use kubectx from PATH on Intel/macOS or Linux)
+alias kctx='/opt/homebrew/opt/kubectx/bin/kubectx'
+alias kns='/opt/homebrew/opt/kubectx/bin/kubens'
+
 # Copy pwd to clipboard
 alias cpwd="pwd | tr -d '\n' | pbcopy"
 

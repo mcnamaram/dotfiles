@@ -1,44 +1,71 @@
 SHELL = /bin/bash
 DOTFILES_DIR := $(dir $(realpath $(firstword $(MAKEFILE_LIST))))
 OS := $(shell bin/is-supported bin/is-macos macos linux)
-PATH := $(DOTFILES_DIR)bin:$(PATH)
+export PATH := $(DOTFILES_DIR)bin:$(PATH)
 NVM_DIR := $(HOME)/.nvm
 export XDG_CONFIG_HOME := $(HOME)/.config
 export STOW_DIR := $(DOTFILES_DIR)
 
-# Detect Homebrew prefix (Apple Silicon vs Intel)
-BREW_PREFIX := $(shell /opt/homebrew/bin/brew --prefix 2>/dev/null || /usr/local/bin/brew --prefix 2>/dev/null || echo /usr/local)
+# Detect Homebrew prefix (Apple Silicon / Linux / Intel / none)
+BREW_PREFIX := $(shell /opt/homebrew/bin/brew --prefix 2>/dev/null || \
+	/home/linuxbrew/.linuxbrew/bin/brew --prefix 2>/dev/null || \
+	/usr/local/bin/brew --prefix 2>/dev/null || echo /usr/local)
 BASH := $(BREW_PREFIX)/bin/bash
 
-.PHONY: test
+# Ensure variables exported to recipe shells (e.g. PATH, HOMEBREW_*)
+.EXPORT_ALL_VARIABLES:
+
+.PHONY: all macos linux test packages packages-macos packages-linux \
+	stow-macos stow-linux core-macos core-linux \
+	brew bash-$(OS) git-$(OS) python-macos \
+	sdkman nvm iterm2 aws secrets
+
+# ── entry points ────────────────────────────────────────────────
 
 all: $(OS)
 
-macos: sudo core-macos packages link set-default-shell
+macos: sudo core-macos packages-macos link bash-$(OS)
 
-linux: core-linux link set-default-shell
+linux: sudo core-linux stow-linux packages-linux link bash-$(OS)
 
-core-macos: brew bash git sdkman nvm python
+# ── platform-specific core setup ────────────────────────────────
+
+core-macos: brew bash-macos git-macos sdkman nvm python-macos
 
 core-linux:
-	apt-get update
-	apt-get upgrade -y
-	apt-get dist-upgrade -f
+	sudo apt-get update
+	sudo apt-get upgrade -y
+	sudo apt-get dist-upgrade -f
+
+# ── stow ────────────────────────────────────────────────────────
 
 stow-macos: brew
 	is-executable stow || brew install stow
 
-stow-linux: core-linux
-	is-executable stow || apt-get -y install stow
+stow-linux:
+	is-executable stow || sudo apt-get -y install stow
+
+# ── sudo refresh ────────────────────────────────────────────────
 
 sudo:
 	sudo -v
 	while true; do sudo -n true; sleep 240; kill -0 "$$" || exit; done 2>/dev/null &
 
-packages: brew-packages node-packages
+# ── packages (platform split) ───────────────────────────────────
+
+packages-macos: brew-packages node-packages
+
+packages-linux: stow-linux
+	sudo apt-get install -y curl wget vim git build-essential
+
+# ── link / unlink ───────────────────────────────────────────────
 
 link: stow-$(OS)
-	for FILE in $$(\ls -A runcom); do if [ -f $(HOME)/$$FILE -a ! -h $(HOME)/$$FILE ]; then mv -v $(HOME)/$$FILE{,.bak}; fi; done
+	for FILE in $$(ls -A runcom); do \
+		if [ -f $(HOME)/$$FILE -a ! -h $(HOME)/$$FILE ]; then \
+			mv -v $(HOME)/$$FILE{,.bak}; \
+		fi; \
+	done
 	mkdir -p $(XDG_CONFIG_HOME)
 	stow -t $(HOME) runcom
 	stow -t $(XDG_CONFIG_HOME) config
@@ -46,50 +73,72 @@ link: stow-$(OS)
 unlink: stow-$(OS)
 	stow --delete -t $(HOME) runcom
 	stow --delete -t $(XDG_CONFIG_HOME) config
-	for FILE in $$(\ls -A runcom); do if [ -f $(HOME)/$$FILE.bak ]; then mv -v $(HOME)/$$FILE.bak $(HOME)/$${FILE%%.bak}; fi; done
+	for FILE in $$(ls -A runcom); do \
+		if [ -f $(HOME)/$$FILE.bak ]; then \
+			mv -v $(HOME)/$$FILE.bak $(HOME)/$${FILE%%.bak}; \
+		fi; \
+	done
+
+# ── brew ────────────────────────────────────────────────────────
 
 brew:
 	is-executable brew || curl -fsSL https://raw.githubusercontent.com/Homebrew/install/master/install.sh | bash
-	eval "$$($(BREW_PREFIX)/bin/brew shellenv)"
+	export "$$( $(BREW_PREFIX)/bin/brew shellenv )"
 	brew analytics off
 
-bash: SHELLS=/private/etc/shells
-bash: brew
-	if ! grep -q $(BASH) $(SHELLS); then brew install bash bash-completion@2 pcre pcre2 && sudo tee -a $(SHELLS) <<<$(BASH); fi
+# ── bash (platform split) ───────────────────────────────────────
 
-set-default-shell: bash
+bash-macos: brew
 	@echo "Set bash as the default shell for the user"
+	if ! grep -q $(BASH) /private/etc/shells; then \
+		brew install bash bash-completion@2 pcre pcre2 && \
+		sudo tee -a /private/etc/shells <<<$(BASH); \
+	fi
 	chsh -s $(BASH)
 
-git: brew
+bash-linux:
+	@echo "Set bash as the default shell for the user"
+	which bash >/dev/null 2>&1 || { echo "bash is required"; exit 1; }
+	chsh -s /bin/bash
+
+# ── git (platform split) ────────────────────────────────────────
+
+git-macos: brew
 	brew install git
+
+git-linux:
+	which git >/dev/null 2>&1 || sudo apt-get -y install git
+
+# ── python ────────────────────────────────────────────────────────
+
+python-macos: brew
+	brew install python@3.12
+
+# ── shared tools ────────────────────────────────────────────────
+
+brew-packages: brew
+	brew bundle --file=$(DOTFILES_DIR)install/Brewfile.$(OS)
 
 sdkman:
 	curl -sL https://get.sdkman.io | bash && source ~/.sdkman/bin/sdkman-init.sh
 
 iterm2:
-	curl -L https://iterm2.com/shell_integration/bash -o ~/.iterm2_shell_integration.bash && source ~/.iterm2_shell_integration.bash
+	curl -L https://iterm2.com/shell_integration/bash -o ~/.iterm2_shell_integration.bash && \
+	source ~/.iterm2_shell_integration.bash
 
 nvm:
 	if ! [ -d $(NVM_DIR)/.git ]; then git clone https://github.com/creationix/nvm.git $(NVM_DIR); fi
 	. $(NVM_DIR)/nvm.sh; nvm install --lts --latest-npm
 
-python: brew
-	brew install python@3.12
-
-brew-packages: brew
-	brew bundle --file=$(DOTFILES_DIR)install/Brewfile.$(OS)
-
 sdkman-jdk: sdkman
-	$(shell . ~/.sdkman/bin/sdkman-init.sh && \
-	sdk install java && \
+	. ~/.sdkman/bin/sdkman-init.sh && \
+	echo y | sdk install java && \
 	jdk_ver=$$(sdk current java | awk '{print $$NF}') && \
 	sdk use java $$jdk_ver && \
-	sdk default java $$jdk_ver)
-
+	sdk default java $$jdk_ver
 
 node-packages: nvm
-	. $(NVM_DIR)/nvm.sh; npm install --location global $(shell cat install/npmfile)
+	. $(NVM_DIR)/nvm.sh; npm install --location global $$(cat install/npmfile)
 
 aws: brew
 	is-executable aws || brew install awscli

@@ -11,7 +11,7 @@
 The dotfiles repo (`mcnamaram/dotfiles`) is a single public repo that contains both personal/home development config and work-specific tooling. Work artifacts (API tokens, internal repo references, commit hooks, work-only packages, employer-specific functions) are entangled with standard home dev config. This creates:
 
 - **Security risk:** Plaintext secrets in `system/.secrets`, work email/config in tracked files.
-- **Noise:** 144 Brewfile entries and 117 Cursor extensions when ~50% are work-only.
+- **Noise:** 144 Brewfile entries and 117 VS Code extensions when ~50% are work-only.
 - **Compromising content:** References to internal employer repos, tooling, and infrastructure in a public GitHub repo.
 - **Arch mismatch:** Intel paths hardcoded in Makefile while current work laptop is Apple Silicon.
 - **Stale code:** Commented-out rbenv, missing jabba target, dead zsh files, deprecated packages.
@@ -60,9 +60,7 @@ dotfiles/
 │   ├── .bashrc               # clean — no work aliases or secrets
 │   ├── .setuprc              # sources system/*, then *.work, then ~/.extra
 │   ├── .inputrc
-│   ├── .hushlogin
-│   ├── .vimrc
-│   └── .gvimrc
+│   └── .hushlogin
 ├── system/
 │   ├── .alias                # standard aliases only
 │   ├── .alias.macos
@@ -111,7 +109,7 @@ dotfiles/
 dotfiles-work/
 ├── install/
 │   ├── Brewfile.work          # work-only brew packages
-│   ├── Codefile.work          # work-only Cursor extensions
+│   ├── Codefile.work          # work-only VS Code extensions
 │   └── npmfile.work           # work-only global npm
 ├── system/
 │   ├── .function_ai.work      # work AI helpers
@@ -258,7 +256,7 @@ No plaintext secrets anywhere in either repo.
 
 ### Standard Brewfile
 
-Core UNIX tools, shell, git, Docker, KinD, Python toolchain, Go, and essential casks (1Password, Cursor, iTerm2, etc.). ~54 entries total.
+Core UNIX tools, shell, git, Docker, KinD, Python toolchain, Go, and essential casks (1Password, VS Code, iTerm2, etc.). ~54 entries total.
 
 ### Work Brewfile.work
 

@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 
-# Enable aliases to be sudo’ed
+# Enable aliases to be sudo'ed
 alias sudo='sudo '
 
 # Easier navigation: .., ..., ...., ....., ~ and -
@@ -9,31 +9,41 @@ alias ...='cd ../..'
 alias ....='cd ../../..'
 alias .....='cd ../../../..'
 
-alias ls='ls -A --color=auto'
-alias l='ls -CF --color=auto'
-alias ll='ls -alho --color=auto'
-alias lf='ls -F1ltr --color=auto'
+# ls variants (cross-platform: --color=auto works on GNU; macOS ls uses -G)
+if is-macos; then
+  alias ls='ls -G'
+  alias l='ls -GF'
+  alias ll='ls -alG'
+  alias lf='ls -FG1ltr'
+else
+  alias ls='ls --color=auto'
+  alias l='ls -CF --color=auto'
+  alias ll='ls -alho --color=auto'
+  alias lf='ls -F1ltr --color=auto'
+fi
 
 alias mv='mv -iv'
 alias cp='cp -iv'
-alias h='history'
 
+# tree variants
 alias tree="tree -A"
 alias treed="tree -d"
 alias tree1="tree -d -L 1"
 alias tree2="tree -d -L 2"
 
-# Network
+# Network (cross-platform)
 alias ping='ping -c 4'
-alias ports='netstat -tulanp'
-alias ip="dig +short myip.opendns.com @resolver1.opendns.com"
+if is-executable ss; then
+  alias ports='ss -tulanp'
+else
+  alias ports='netstat -tulanp'
+fi
+# Use local DNS resolver first, fall back to OpenDNS
+alias ip="dig +short myip.opendns.com @resolver1.opendns.com 2>/dev/null || dig +short myip.opendns.com @208.67.222.222"
 
 alias igrep='grep -i'
-alias psgrep="psgrep -i"
 
-alias grip="grip -b"
-
-# Can't spell
+# Can't spell (muscle-memory helpers)
 alias eixt='exit'
 alias gits='git s'
 alias gitp='git p'
@@ -41,7 +51,7 @@ alias gitlg='git lg'
 alias gitl='git l'
 alias fit='git fetch -p'
 
-# minify common commands
+# Quick dev commands
 alias bashsource='source ~/.dotfiles/runcom/.bash_profile'
 alias hosts="sudo $EDITOR /etc/hosts"
 
@@ -50,21 +60,25 @@ alias functions="declare -f | grep '^[a-z].* ()' | sed 's/{$//'"
 alias paths='echo -e ${PATH//:/\\n}'
 
 # docker
+alias dcomp='docker compose'
 alias dockerstopps="docker stop \$(docker ps -qf status=running)"
 alias dockerwipeps="docker rm \$(docker ps -aq -f status=exited)"
-alias dockerwipeimages="docker rmi \$(docker images -q)"
 alias dockerwipenone="docker rmi \$(docker images -qf 'dangling=true')"
-alias dockerwipe="dockerstopps && dockerwipeps && dockerwipenone && dockerwipeimages"
+# dockerwipe is dangerous — requires explicit confirmation
+alias dockerwipe='echo "This will stop ALL containers and remove ALL images. Run individually if you meant it:" && echo "  dockerstopps; dockerwipeps; dockerwipenone"'
 alias dockercmd='docker inspect -f "{{.Name}} {{.Config.Cmd}}" $(docker ps -q)'
 alias dockerips='docker inspect -f "{{.Name}} {{.NetworkSettings.IPAddress}}" $(docker ps -q)'
-
-alias dcomp='docker compose'
 
 # kube
 alias kpow='_kpow '
 
-# python
-alias pyupdate="pip install --upgrade pip"
-alias pyoutdated="pip list --outdated --not-required"
-alias pyupgradeall="pip install --upgrade pip && pip list --outdated --not-required --format=freeze | cut -d= -f1 | xargs -n1 pip install -U"
-
+# python (use pip3 on systems where pip != pip3)
+if is-executable pip3; then
+  alias pyupdate="pip3 install --upgrade pip"
+  alias pyoutdated="pip3 list --outdated --not-required"
+  alias pyupgradeall="pip3 install --upgrade pip && pip3 list --outdated --not-required --format=freeze | cut -d= -f1 | xargs -n1 pip3 install -U"
+else
+  alias pyupdate="pip install --upgrade pip"
+  alias pyoutdated="pip list --outdated --not-required"
+  alias pyupgradeall="pip install --upgrade pip && pip list --outdated --not-required --format=freeze | cut -d= -f1 | xargs -n1 pip install -U"
+fi

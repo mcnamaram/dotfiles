@@ -1,6 +1,23 @@
 #!/usr/bin/env bash
 
-# iTerm2 shell integration
+# Terminal shell integration (platform-specific)
 
-test -e "${HOME}/.iterm2_shell_integration.bash" && source "${HOME}/.iterm2_shell_integration.bash"
-test -e "${HOME}/.iterm2_shell_integration.zsh" && source "${HOME}/.iterm2_shell_integration.zsh"
+if is-macos; then
+  # iTerm2 shell integration
+  test -e "${HOME}/.iterm2_shell_integration.bash" && source "${HOME}/.iterm2_shell_integration.bash"
+  test -e "${HOME}/.iterm2_shell_integration.zsh" && source "${HOME}/.iterm2_shell_integration.zsh"
+elif is-executable tmux; then
+  # tmux: sync clipboard, enable mouse, and set title
+  if [ -n "$TMUX" ]; then
+    # Sync paste buffer with system clipboard (requires xclip/xsel on Linux)
+    if is-executable xclip; then
+      bind-key -T copy-mode-vi y send-keys -X copy-pipe-and-cancel "xclip -selection clipboard"
+      bind-key -T copy-mode-vi MouseDragEnd1Pane send-keys -X copy-pipe-and-cancel "xclip -selection clipboard"
+    elif is-executable xsel; then
+      bind-key -T copy-mode-vi y send-keys -X copy-pipe-and-cancel "xsel --clipboard --input"
+    fi
+
+    # Sync tmux clipboard with system on paste
+    bind-key -T paste-buffer send-keys -X paste -r
+  fi
+fi

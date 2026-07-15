@@ -11,7 +11,7 @@ whitespace = fix
 excludesfile = ~/.config/git/ignore
 attributesfile = ~/.config/git/attributes
 
-editor = cursor --wait
+editor = code --wait
 filemode = false
 whitespace = trailing-space,space-before-tab,tab-in-indent,cr-at-eol,space-at-eol
 
@@ -62,7 +62,7 @@ abbreviatecommands = true
 stat = true
 
 [sequence]
-editor = cursor --wait
+editor = code --wait
 
 [alias]
 
@@ -198,7 +198,7 @@ renames = copies
 indentHeuristic = true
 
 mnemonicprefix = true
-	tool = cursor
+	tool = vscode
 colorMoved = default
 whitespace = -space-at-eol, -space-before-tab, indent-with-non-tab, cr-at-eol
 ignoreWhitespaceChange = true
@@ -216,7 +216,7 @@ prompt = false
 cmd = delta --diff $LOCAL $REMOTE
 
 [merge]
-tool = cursor
+tool = vscode
 conflictstyle = diff3
 defaultToUpstream = true
 
@@ -225,8 +225,8 @@ log = true
 [mergetool]
 prompt = false
 
-[mergetool "cursor"]
-cmd = cursor --wait $MERGED
+[mergetool "vscode"]
+cmd = code --wait $MERGED
 trustExitCode = false
 
 [color]

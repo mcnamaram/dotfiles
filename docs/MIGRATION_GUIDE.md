@@ -27,7 +27,7 @@ This will:
 
 - Install Homebrew (if missing)
 - Install all standard Brewfile packages
-- Install Cursor extensions from Codefile
+- Install VS Code extensions from Codefile
 - Install global npm packages
 - Set up bash as the default shell
 - Stow runcom and config symlinks
@@ -89,29 +89,6 @@ brew uninstall --cask basictex tunnelblick
 gem uninstall rake rdoc
 ```
 
-### Cursor extensions
-
-```bash
-cursor --uninstall-extension altimateai.vscode-altimate-mcp-server
-cursor --uninstall-extension anysphere.cursorpyright
-cursor --uninstall-extension castwide.solargraph
-cursor --uninstall-extension firefox-devtools.vscode-firefox-debug
-cursor --uninstall-extension hbenl.vscode-test-explorer
-cursor --uninstall-extension innoverio.vscode-dbt-power-user
-cursor --uninstall-extension jbockle.jbockle-format-files
-cursor --uninstall-extension ms-azuretools.vscode-docker
-cursor --uninstall-extension ms-vscode.test-adapter-converter
-cursor --uninstall-extension ms-vscode.vscode-speech
-cursor --uninstall-extension ms-vsliveshare.vsliveshare
-cursor --uninstall-extension robholme.hl7tools
-cursor --uninstall-extension shd101wyy.markdown-preview-enhanced
-cursor --uninstall-extension shopify.ruby-lsp
-cursor --uninstall-extension davidmaliglowka.taskr-kanban
-cursor --uninstall-extension visualstudioexptteam.intellicode-api-usage-examples
-cursor --uninstall-extension visualstudioexptteam.vscodeintellicode
-cursor --uninstall-extension darkriszty.markdown-table-prettify
-cursor --uninstall-extension davidnussio.vscode-jq-playground
-```
 
 ### npm globals
 
@@ -125,7 +102,7 @@ npm uninstall -g dotenv nx task-master 2>/dev/null
 
 ```bash
 brew bundle check --file=~/.dotfiles/install/Brewfile
-echo $EDITOR                    # cursor --wait
+echo $EDITOR                    # code --wait
 git config user.email           # mcnamaram@users.noreply.github.com
 secrets-manage list             # stored secrets
 type kindstart                  # should show function

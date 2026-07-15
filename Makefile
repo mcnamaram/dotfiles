@@ -1,4 +1,4 @@
-SHELL = /bin/bash
+SHELL := /bin/bash
 DOTFILES_DIR := $(dir $(realpath $(firstword $(MAKEFILE_LIST))))
 OS := $(shell bin/is-supported bin/is-macos macos linux)
 export PATH := $(DOTFILES_DIR)bin:$(PATH)
@@ -6,7 +6,7 @@ NVM_DIR := $(HOME)/.nvm
 export XDG_CONFIG_HOME := $(HOME)/.config
 export STOW_DIR := $(DOTFILES_DIR)
 
-# Detect Homebrew prefix (Apple Silicon / Linux / Intel / none)
+# Detect Homebrew prefix (Apple Silicon → Linuxbrew → Intel → none)
 BREW_PREFIX := $(shell /opt/homebrew/bin/brew --prefix 2>/dev/null || \
 	/home/linuxbrew/.linuxbrew/bin/brew --prefix 2>/dev/null || \
 	/usr/local/bin/brew --prefix 2>/dev/null || echo /usr/local)
@@ -36,6 +36,9 @@ core-linux:
 	sudo apt-get update
 	sudo apt-get upgrade -y
 	sudo apt-get dist-upgrade -f
+	# Install nvm (needs curl from apt above)
+	[ -d $(NVM_DIR)/.git ] || git clone https://github.com/nvm-sh/nvm.git $(NVM_DIR)
+	. $(NVM_DIR)/nvm.sh && nvm install --lts --latest-npm 2>/dev/null || true
 
 # ── stow ────────────────────────────────────────────────────────
 
@@ -56,7 +59,10 @@ sudo:
 packages-macos: brew-packages node-packages
 
 packages-linux: stow-linux
-	sudo apt-get install -y curl wget vim git build-essential
+	sudo apt-get install -y curl wget git build-essential
+	# Ensure nvm is installed before using it
+	[ -d $(NVM_DIR)/.git ] || git clone https://github.com/nvm-sh/nvm.git $(NVM_DIR)
+	. $(NVM_DIR)/nvm.sh && npm install --location global $$(cat install/npmfile)
 
 # ── link / unlink ───────────────────────────────────────────────
 
@@ -127,8 +133,8 @@ iterm2:
 	source ~/.iterm2_shell_integration.bash
 
 nvm:
-	if ! [ -d $(NVM_DIR)/.git ]; then git clone https://github.com/creationix/nvm.git $(NVM_DIR); fi
-	. $(NVM_DIR)/nvm.sh; nvm install --lts --latest-npm
+	if ! [ -d $(NVM_DIR)/.git ]; then git clone https://github.com/nvm-sh/nvm.git $(NVM_DIR); fi
+	. $(NVM_DIR)/nvm.sh && nvm install --lts --latest-npm 2>/dev/null || true
 
 sdkman-jdk: sdkman
 	. ~/.sdkman/bin/sdkman-init.sh && \
@@ -138,14 +144,14 @@ sdkman-jdk: sdkman
 	sdk default java $$jdk_ver
 
 node-packages: nvm
-	. $(NVM_DIR)/nvm.sh; npm install --location global $$(cat install/npmfile)
+	. $(NVM_DIR)/nvm.sh && npm install --location global $$(cat install/npmfile)
 
 aws: brew
 	is-executable aws || brew install awscli
 	brew link --overwrite awscli
 
 secrets:
-	@echo "Run secrets-manage to store shell secrets in Keychain."
+	@echo "Run secrets-manage to store shell secrets in keyring."
 	@echo "  secrets-manage set openai api-key"
 	@echo "  secrets-manage set github personal-token"
 	@echo "Or bulk import: secrets-manage import setup/secrets.list"

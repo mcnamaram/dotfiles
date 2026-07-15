@@ -29,9 +29,17 @@ if [ -n "$BASH_VERSION" ]; then
   (is-executable kubectl) && source <(kubectl completion bash)
   (is-executable helm) && source <(helm completion bash)
 
-  for f in /opt/homebrew/opt/kubectx/etc/bash_completion.d/*; do
-    [ -f "$f" ] && source "$f"
+  # kubectx completion — try Homebrew prefix first, then common locations
+  for _kctx_dir in \
+    "$BREW_PREFIX/opt/kubectx/etc/bash_completion.d" \
+    "/opt/homebrew/opt/kubectx/etc/bash_completion.d" \
+    "/usr/local/opt/kubectx/etc/bash_completion.d"; do
+    [ -d "$_kctx_dir" ] && for f in "$_kctx_dir"/*; do
+      [ -f "$f" ] && source "$f"
+    done
   done
+  unset _kctx_dir
+
   (is-executable poetry) && eval "$(poetry completions bash)"
 fi
 

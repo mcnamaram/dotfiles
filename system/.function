@@ -17,15 +17,6 @@ get() {
   echo "${!1}"
 }
 
-# Add to path
-
-prepend-path() {
-  case ":$PATH:" in
-  *":$1:"*) ;;
-  *) [ -d "$1" ] && PATH="$1:$PATH" ;;
-  esac
-}
-
 # Show 256 TERM colors
 
 colors() {

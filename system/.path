@@ -9,9 +9,11 @@ if is-executable getconf; then
   PATH=$(getconf PATH)
 fi
 
-# Homebrew (detect arch)
+# Homebrew (detect arch: Apple Silicon → Intel → Linuxbrew → none)
 if [ -d "/opt/homebrew" ]; then
   BREW_PREFIX="/opt/homebrew"
+elif [ -d "/home/linuxbrew/.linuxbrew" ]; then
+  BREW_PREFIX="/home/linuxbrew/.linuxbrew"
 else
   BREW_PREFIX="/usr/local"
 fi
@@ -22,12 +24,14 @@ prepend-path "/usr/local/bin"
 prepend-path "$BREW_PREFIX/bin"
 prepend-path "$BREW_PREFIX/sbin"
 
-# GNU tools (override macOS builtins)
-prepend-path "$BREW_PREFIX/opt/openssl/bin"
-prepend-path "$BREW_PREFIX/opt/coreutils/libexec/gnubin"
-prepend-path "$BREW_PREFIX/opt/gnu-getopt/bin"
-prepend-path "$BREW_PREFIX/opt/gnu-sed/libexec/gnubin"
-prepend-path "$BREW_PREFIX/opt/grep/libexec/gnubin"
+# GNU tools (override macOS builtins via Homebrew; Linux already has GNU coreutils)
+if is-macos; then
+  prepend-path "$BREW_PREFIX/opt/openssl@3/bin"
+  prepend-path "$BREW_PREFIX/opt/coreutils/libexec/gnubin"
+  prepend-path "$BREW_PREFIX/opt/gnu-getopt/bin"
+  prepend-path "$BREW_PREFIX/opt/gnu-sed/libexec/gnubin"
+  prepend-path "$BREW_PREFIX/opt/grep/libexec/gnubin"
+fi
 
 # Languages
 prepend-path "$GOPATH"
@@ -38,15 +42,29 @@ prepend-path "$POETRYBIN"
 # Dotfiles and user bin
 prepend-path "$DOTFILES_DIR/bin"
 prepend-path "$HOME/bin"
+prepend-path "$HOME/.local/bin"
 
 # System admin
 prepend-path "/sbin"
 prepend-path "/usr/sbin"
 
-# Deduplicate
-PATH=$(echo -n "$PATH" | awk -v RS=: -v ORS=: '{ if (!seen[$0]++) print $0 }' | sed 's/:$//')
+# Deduplicate (faster than awk pipeline — uses bash associative array)
+declare -A _seen_paths
+_deduped_path=""
+IFS=: read -ra _path_parts <<< "$PATH"
+for _p in "${_path_parts[@]}"; do
+  if [ -n "$_p" ] && [ -z "${_seen_paths[$_p]+x}" ]; then
+    _seen_paths[$_p]=1
+    _deduped_path="${_deduped_path:+$_deduped_path:}$_p"
+  fi
+done
+unset PATH
+PATH="$_deduped_path"
+unset _deduped_path _path_parts _p _seen_paths
 
 export PATH
 
-# Make PATH available to GUI apps
-launchctl setenv PATH "$PATH"
+# Make PATH available to GUI apps (macOS only)
+if is-macos; then
+  launchctl setenv PATH "$PATH"
+fi

@@ -7,7 +7,7 @@
 - [Homebrew](https://brew.sh) (packages: [Brewfile.macos](./install/Brewfile.macos) / [Brewfile.linux](./install/Brewfile.linux))
 - [Node.js + npm LTS](https://nodejs.org/en/download/) (packages: [npmfile](./install/npmfile))
 - Latest Git, Bash, Python 3, GNU coreutils, curl
-- `$EDITOR` (and Git editor) is [Cursor](https://cursor.sh/) on macOS, `vim` on Linux/WSL
+- `$EDITOR` (and Git editor) is VS Code (`code --wait`) on all platforms
 
 ## Architecture
 

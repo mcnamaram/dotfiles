@@ -49,10 +49,17 @@ if [ -n "$BASH_VERSION" ]; then
     P_RESET=${RESET}
   }
 
-  # Function to cache Git branch and Kubernetes context
+  # Cached prompt info — only recomputes when PWD changes
+  _cached_pwd=""
+  _cached_git=""
+  _cached_kube=""
+
   cache_prompt_info() {
-    _GIT_PROMPT=$(parse_git_branch)
-    _KUBE_PROMPT=$(parse_kube_context)
+    if [ "$PWD" != "$_cached_pwd" ]; then
+      _cached_pwd="$PWD"
+      _cached_git=$(parse_git_branch)
+      _cached_kube=$(parse_kube_context)
+    fi
   }
 
   # Update prompt command
@@ -84,18 +91,18 @@ if [ -n "$BASH_VERSION" ]; then
       P_EXIT+="${P_RED}✘ "
     fi
 
-    # effectively not a cache now but i need the changes to show
     cache_prompt_info
 
-    PS1="${P_EXIT}${P_BGREEN}${TIME12H}${P_BLUEB}${_KUBE_PROMPT}${_GIT_PROMPT}${P_YELLOW} ${P_PWD}${P_RESET} \$ "
+    PS1="${P_EXIT}${P_BGREEN}${TIME12H}${P_BLUEB}${_cached_kube}${_cached_git}${P_YELLOW} ${P_PWD}${P_RESET} \$ "
   }
 
-  # Optimized Git branch parsing
+  # Optimized Git branch parsing — uses porcelain status (fast) instead of diff
   parse_git_branch() {
     local branch
     if git rev-parse --is-inside-work-tree &>/dev/null; then
       branch=$(git symbolic-ref --short HEAD 2>/dev/null || git describe --tags --exact-match 2>/dev/null)
-      if git diff --quiet 2>/dev/null >&2; then
+      # Porcelain status is faster than diff --quiet for dirty check
+      if [ -z "$(git status --porcelain 2>/dev/null)" ]; then
         echo "${P_GREEN}(${branch})"
       else
         echo "${P_BRED}{${branch}}"
@@ -103,7 +110,7 @@ if [ -n "$BASH_VERSION" ]; then
     fi
   }
 
-  # Optimized Kubernetes context parsing
+  # Optimized Kubernetes context parsing — cached by caller
   parse_kube_context() {
     local context=$(kubectl config current-context 2>/dev/null)
     if [ -n "$context" ]; then

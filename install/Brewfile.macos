@@ -1,1 +1,78 @@
-Brewfile
+# macOS Brewfile — shared brews + macOS casks
+# To edit: update the common section below and the Linux Brewfile.linux in sync.
+
+# ── Common brews (shared with Brewfile.linux) ─────────────────────────────
+
+# Shell
+brew "bash"
+brew "bash-completion@2"
+
+# Core UNIX
+brew "coreutils"
+brew "diffutils"
+brew "gawk"
+brew "gnu-getopt"
+brew "gnu-sed"
+brew "grep"
+brew "moreutils"
+brew "rename"
+brew "screen"
+brew "tree"
+brew "watch"
+brew "wget"
+
+# VCS
+brew "git"
+brew "git-delta"
+
+# Security / crypto
+brew "gnupg", link: false
+brew "openssh"
+brew "openssl@3"
+
+# Languages / runtimes
+brew "go"
+brew "python@3.12"
+brew "pyenv"
+brew "pyenv-virtualenv"
+
+# Python tooling
+brew "poetry"
+brew "virtualenv"
+brew "yamllint"
+
+# Data wrangling
+brew "jq"
+brew "python-yq"
+
+# Docker / Kubernetes
+brew "docker-completion"
+brew "kind"
+brew "kubectx", link: false
+brew "kubernetes-cli"
+
+# Editor / dev tools
+brew "highlight"
+brew "htop"
+brew "httpie"
+brew "netcat"
+brew "nss"
+brew "pandoc"
+brew "readline"
+brew "shellcheck"
+brew "shfmt"
+brew "stow"
+
+# ── macOS-only casks ───────────────────────────────────────────────────────
+
+cask "1password"
+cask "caffeine"
+cask "visual-studio-code"
+cask "drawio"
+cask "font-fira-code"
+cask "font-hack"
+cask "google-chrome"
+cask "hex-fiend"
+cask "iterm2"
+cask "spotify"
+cask "vlc"

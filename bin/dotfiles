@@ -8,16 +8,31 @@ sub_help() {
   echo
   echo "Commands:"
   echo "   clean            Clean up caches (brew, nvm, gem)"
-  echo "   dock             Apply macOS Dock settings"
-  echo "   edit             Open dotfiles in IDE ($DOTFILES_IDE)"
+  if is-macos; then
+    echo "   dock             Apply macOS Dock settings"
+    echo "   macos            Apply macOS system defaults"
+  fi
+  echo "   edit             Open dotfiles in IDE"
   echo "   help             This help message"
-  echo "   macos            Apply macOS system defaults"
   echo "   test             Run tests"
   echo "   update           Update packages and pkg managers (OS, brew, npm, gem)"
 }
 
 sub_edit() {
-  sh -c "$DOTFILES_IDE $DOTFILES_DIR"
+  local ide="${DOTFILES_IDE:-code}"  # VS Code as cross-platform default
+  if is-macos; then
+    if is-executable "code"; then
+      ide="code --wait"
+    fi
+  else
+    # Linux: try VS Code, then VSCodium, then leave default
+    if is-executable "code"; then
+      ide="code"
+    elif is-executable "vscodium"; then
+      ide="vscodium"
+    fi
+  fi
+  sh -c "$ide \"$DOTFILES_DIR\""
 }
 
 sub_test() {
@@ -25,22 +40,40 @@ sub_test() {
 }
 
 sub_update() {
-  sudo softwareupdate -i -a
-  brew update
-  brew upgrade
-  npm install npm -g
-  npm update -g
-  gem update --system
-  gem update
-  pip install --upgrade pip && pip freeze --local | grep -v '^\-e' | cut -d = -f 1 | xargs -n1 pip install -U
+  if is-macos; then
+    sudo softwareupdate -i -a 2>/dev/null || true
+  fi
+  if is-executable brew; then
+    brew update
+    brew upgrade
+  fi
+  if is-executable npm; then
+    npm install npm -g
+    npm update -g
+  fi
+  if is-executable gem; then
+    gem update --system
+    gem update
+  fi
+  if is-executable pip3; then
+    pip3 install --upgrade pip && pip3 freeze --local | grep -v '^\-e' | cut -d = -f 1 | xargs -n1 pip3 install -U
+  elif is-executable pip; then
+    pip install --upgrade pip && pip freeze --local | grep -v '^\-e' | cut -d = -f 1 | xargs -n1 pip install -U
+  fi
 }
 
 sub_clean() {
-  brew cleanup
-  gem cleanup
+  if is-executable brew; then
+    brew cleanup
+  fi
+  if is-executable gem; then
+    gem cleanup
+  fi
   # shellcheck disable=SC1091
-  . "$NVM_DIR/nvm.sh"
-  nvm cache clear
+  if [ -n "$NVM_DIR" ] && [ -f "$NVM_DIR/nvm.sh" ]; then
+    . "$NVM_DIR/nvm.sh"
+    nvm cache clear
+  fi
 }
 
 sub_macos() {

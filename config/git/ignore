@@ -24,9 +24,6 @@ $RECYCLE.BIN/
 ######################
 *~
 .idea
-.cursor
-.idea/
-.cursor/
 .sts4-cache
 *.iml
 *.log

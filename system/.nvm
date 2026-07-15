@@ -15,23 +15,20 @@ find-up() {
   echo "$path"
 }
 
-# Function to change directory and use the appropriate Node version
+# Function to change directory and use the appropriate Node version.
+# Only activates nvm behavior when an .nvmrc is found in the target tree.
+# Outside Node projects, it's a plain cd — no filesystem walk, no version switch.
 cdnvm() {
-  cd "$@" || return
+  builtin cd "$@" || return
 
   local nvm_path=$(find-up .nvmrc | tr -d '\n')
 
-  # If there is no .nvmrc file, use the default nvm version
+  # No .nvmrc in the tree — just leave things as-is
   if [[ -z "$nvm_path" ]]; then
-    local default_version=$(nvm version default)
-    if [[ "$default_version" == "N/A" ]]; then
-      nvm alias default node
-      default_version=$(nvm version default)
-    fi
-    if [[ "$(nvm current)" != "$default_version" ]]; then
-      nvm use default
-    fi
-  elif [[ -s "$nvm_path/.nvmrc" && -r "$nvm_path/.nvmrc" ]]; then
+    return
+  fi
+
+  if [[ -s "$nvm_path/.nvmrc" && -r "$nvm_path/.nvmrc" ]]; then
     local nvm_version=$(<"$nvm_path/.nvmrc")
     local locally_resolved_nvm_version=$(nvm ls --no-colors "$nvm_version" | tail -1 | tr -d '\->*' | tr -d '[:space:]')
 
@@ -43,5 +40,7 @@ cdnvm() {
   fi
 }
 
-# Alias cd to cdnvm to automatically switch Node versions
-alias cd='cdnvm'
+# Alias cd to cdnvm to automatically switch Node versions when an .nvmrc is present.
+if is-executable nvm; then
+  alias cd='cdnvm'
+fi

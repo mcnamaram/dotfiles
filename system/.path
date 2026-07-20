@@ -24,6 +24,11 @@ prepend-path "/usr/local/bin"
 prepend-path "$BREW_PREFIX/bin"
 prepend-path "$BREW_PREFIX/sbin"
 
+# Dotfiles and user bin
+prepend-path "$DOTFILES_DIR/bin"
+prepend-path "$HOME/bin"
+prepend-path "$HOME/.local/bin"
+
 # GNU tools (override macOS builtins via Homebrew; Linux already has GNU coreutils)
 if is-macos; then
   prepend-path "$BREW_PREFIX/opt/openssl@3/bin"
@@ -38,11 +43,6 @@ prepend-path "$GOPATH"
 prepend-path "$GOBIN"
 prepend-path "$PYENVBIN"
 prepend-path "$POETRYBIN"
-
-# Dotfiles and user bin
-prepend-path "$DOTFILES_DIR/bin"
-prepend-path "$HOME/bin"
-prepend-path "$HOME/.local/bin"
 
 # System admin
 prepend-path "/sbin"

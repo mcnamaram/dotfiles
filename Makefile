@@ -24,9 +24,9 @@ BASH := $(BREW_PREFIX)/bin/bash
 
 all: $(OS)
 
-macos: sudo core-macos packages-macos link bash-$(OS)
+macos: sudo core-$(OS) bash-$(OS) stow-$(OS) packages link
 
-linux: sudo core-linux stow-linux packages-linux link bash-$(OS)
+linux: sudo core-$(OS) bash-$(OS) stow-$(OS) packages link
 
 # ── platform-specific core setup ────────────────────────────────
 
@@ -36,9 +36,7 @@ core-linux:
 	sudo apt-get update
 	sudo apt-get upgrade -y
 	sudo apt-get dist-upgrade -f
-	# Install nvm (needs curl from apt above)
-	[ -d $(NVM_DIR)/.git ] || git clone https://github.com/nvm-sh/nvm.git $(NVM_DIR)
-	. $(NVM_DIR)/nvm.sh && nvm install --lts --latest-npm 2>/dev/null || true
+	sudo apt-get install -y curl wget git build-essential
 
 # ── stow ────────────────────────────────────────────────────────
 
@@ -56,13 +54,7 @@ sudo:
 
 # ── packages (platform split) ───────────────────────────────────
 
-packages-macos: brew-packages node-packages
-
-packages-linux: stow-linux
-	sudo apt-get install -y curl wget git build-essential
-	# Ensure nvm is installed before using it
-	[ -d $(NVM_DIR)/.git ] || git clone https://github.com/nvm-sh/nvm.git $(NVM_DIR)
-	. $(NVM_DIR)/nvm.sh && npm install --location global $$(cat install/npmfile)
+packages: brew-packages node-packages
 
 # ── link / unlink ───────────────────────────────────────────────
 
@@ -89,7 +81,7 @@ unlink: stow-$(OS)
 
 brew:
 	is-executable brew || curl -fsSL https://raw.githubusercontent.com/Homebrew/install/master/install.sh | bash
-	export "$$( $(BREW_PREFIX)/bin/brew shellenv )"
+	eval "$$( $(BREW_PREFIX)/bin/brew shellenv )"
 	brew analytics off
 
 # ── bash (platform split) ───────────────────────────────────────
@@ -97,7 +89,7 @@ brew:
 bash-macos: brew
 	@echo "Set bash as the default shell for the user"
 	if ! grep -q $(BASH) /private/etc/shells; then \
-		brew install bash bash-completion@2 pcre pcre2 && \
+		brew install bash bash-completion@2 pcre2 && \
 		sudo tee -a /private/etc/shells <<<$(BASH); \
 	fi
 	chsh -s $(BASH)
@@ -106,6 +98,7 @@ bash-linux:
 	@echo "Set bash as the default shell for the user"
 	which bash >/dev/null 2>&1 || { echo "bash is required"; exit 1; }
 	chsh -s /bin/bash
+	brew install bash-completion@2 pcre2
 
 # ── git (platform split) ────────────────────────────────────────
 

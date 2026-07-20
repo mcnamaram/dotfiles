@@ -8,6 +8,7 @@ config/pip/pip.conf
 install/Brewfile.lock.json
 
 # Work-specific (gitignored even if placed here manually)
+config/git/config.local
 config/iterm2/AppSupport
 config/iterm2/sockets
 config/sublime-text/rbql_table_index_hex

@@ -49,17 +49,15 @@ if [ -n "$BASH_VERSION" ]; then
     P_RESET=${RESET}
   }
 
-  # Cached prompt info — only recomputes when PWD changes
+  # Cached prompt info — refresh when the prompt is drawn so branch state stays current
   _cached_pwd=""
   _cached_git=""
   _cached_kube=""
 
   cache_prompt_info() {
-    if [ "$PWD" != "$_cached_pwd" ]; then
-      _cached_pwd="$PWD"
-      _cached_git=$(parse_git_branch)
-      _cached_kube=$(parse_kube_context)
-    fi
+    _cached_pwd="$PWD"
+    _cached_git=$(parse_git_branch)
+    _cached_kube=$(parse_kube_context)
   }
 
   # Update prompt command
@@ -96,16 +94,31 @@ if [ -n "$BASH_VERSION" ]; then
     PS1="${P_EXIT}${P_BGREEN}${TIME12H}${P_BLUEB}${_cached_kube}${_cached_git}${P_YELLOW} ${P_PWD}${P_RESET} \$ "
   }
 
+  git_prompt_state() {
+    if ! git rev-parse --is-inside-work-tree &>/dev/null; then
+      return 0
+    fi
+
+    if [ -z "$(git status --porcelain 2>/dev/null)" ]; then
+      echo "clean"
+      return 0
+    fi
+
+    echo "dirty"
+    return 0
+  }
+
   # Optimized Git branch parsing — uses porcelain status (fast) instead of diff
   parse_git_branch() {
     local branch
     if git rev-parse --is-inside-work-tree &>/dev/null; then
       branch=$(git symbolic-ref --short HEAD 2>/dev/null || git describe --tags --exact-match 2>/dev/null)
-      # Porcelain status is faster than diff --quiet for dirty check
-      if [ -z "$(git status --porcelain 2>/dev/null)" ]; then
-        echo "${P_GREEN}(${branch})"
-      else
-        echo "${P_BRED}{${branch}}"
+      if [ -n "$branch" ]; then
+        if [ "$(git_prompt_state)" = "clean" ]; then
+          echo "${P_GREEN}(${branch})"
+        else
+          echo "${P_BRED}{${branch}}"
+        fi
       fi
     fi
   }

@@ -36,11 +36,11 @@ done
 # Set LSCOLORS
 eval "$(dircolors -b "$DOTFILES_DIR"/system/.dir_colors)"
 
-# Hook for extra/custom stuff
+# Hook for extra/custom stuff; we'll add more as we need it
 DOTFILES_EXTRA_DIR="$HOME/.extra"
 
 if [ -d "$DOTFILES_EXTRA_DIR" ]; then
-  for EXTRAFILE in "$DOTFILES_EXTRA_DIR"/runcom/*.sh; do
+  for EXTRAFILE in "$DOTFILES_EXTRA_DIR"/.{env}; do
     [ -f "$EXTRAFILE" ] && source "$EXTRAFILE"
   done
 fi

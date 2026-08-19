@@ -19,20 +19,7 @@ sub_help() {
 }
 
 sub_edit() {
-  local ide="${DOTFILES_IDE:-code}"  # VS Code as cross-platform default
-  if is-macos; then
-    if is-executable "code"; then
-      ide="code --wait"
-    fi
-  else
-    # Linux: try VS Code, then VSCodium, then leave default
-    if is-executable "code"; then
-      ide="code"
-    elif is-executable "vscodium"; then
-      ide="vscodium"
-    fi
-  fi
-  sh -c "$ide \"$DOTFILES_DIR\""
+  sh -c "$EDITOR \"$DOTFILES_DIR\""
 }
 
 sub_test() {

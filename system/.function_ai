@@ -24,26 +24,6 @@ ollama-ready() {
   return 1
 }
 
-# List available Ollama models
-
-ollama-list() {
-  ollama-ready || return 1
-  ollama list
-}
-
-# Interactive chat with Ollama
-
-ollama-chat() {
-  local MODEL="${1:-llama3}"
-  shift || true
-  ollama-ready || return 1
-  if [ $# -gt 0 ]; then
-    ollama run "$MODEL" "$*"
-  else
-    ollama run "$MODEL"
-  fi
-}
-
 # Show running Ollama models (memory usage)
 
 ollama-ps() {

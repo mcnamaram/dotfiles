@@ -1,37 +1,5 @@
 #!/usr/bin/env bash
 
-# Show a specific line from a file, optionally show surrounding lines
-
-line() {
-  if [ ! -f "$3" ]; then
-    echo "File not found: $3"
-    return 1
-  fi
-  local LINE_NUMBER=$1
-  local LINES_AROUND=${2:-0}
-  sed -n "$((LINE_NUMBER - LINES_AROUND)),$((LINE_NUMBER + LINES_AROUND))p" "$3"
-}
-
-# Show duplicate lines in a file
-
-duplines() {
-  if [ ! -f "$1" ]; then
-    echo "File not found: $1"
-    return 1
-  fi
-  sort "$1" | uniq -d
-}
-
-# Show unique lines in a file
-
-uniqlines() {
-  if [ ! -f "$1" ]; then
-    echo "File not found: $1"
-    return 1
-  fi
-  sort "$1" | uniq -u
-}
-
 # Decode a base64 string
 
 debase() {

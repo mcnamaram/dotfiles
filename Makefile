@@ -111,7 +111,8 @@ git-linux:
 # ── python ────────────────────────────────────────────────────────
 
 python-macos: brew
-	brew install python@3.12
+	brew install uv
+	uv python install --default
 
 # ── shared tools ────────────────────────────────────────────────
 

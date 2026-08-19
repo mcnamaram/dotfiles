@@ -6,7 +6,7 @@ if is-supported "grep --color a <<< a"; then
   GREP_OPTIONS+=" --color=auto"
 fi
 
-# Avoid VCS folders
+# Avoid CVS folders
 
 if is-supported "echo | grep --exclude-dir=.cvs ''"; then
   for PATTERN in .cvs .git .hg .svn; do

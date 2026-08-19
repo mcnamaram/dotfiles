@@ -29,6 +29,10 @@ if [ -n "$BASH_VERSION" ]; then
   (is-executable kubectl) && source <(kubectl completion bash)
   (is-executable helm) && source <(helm completion bash)
 
+  if [ -s "$HOME/.bash_completions/open-webui.sh"]; then
+    source "$HOME/.bash_completions/open-webui.sh"
+  fi
+
   # kubectx completion — try Homebrew prefix first, then common locations
   for _kctx_dir in \
     "$BREW_PREFIX/opt/kubectx/etc/bash_completion.d" \
@@ -40,7 +44,6 @@ if [ -n "$BASH_VERSION" ]; then
   done
   unset _kctx_dir
 
-  (is-executable poetry) && eval "$(poetry completions bash)"
 fi
 
 # nvm

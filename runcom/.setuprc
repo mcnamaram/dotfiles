@@ -18,7 +18,7 @@ fi
 PATH="$DOTFILES_DIR/bin:$PATH"
 
 # Source standard dotfiles (order matters; skip .work overlay files)
-for DOTFILE in "$DOTFILES_DIR"/system/.{env,function,function_*,path,alias,grep,nvm,completion,prompt_bash,iterm,pyenv,direnv,secrets,sdkman}; do
+for DOTFILE in "$DOTFILES_DIR"/system/.{env,function,function_*,path,alias,grep,nvm,completion,prompt_bash,iterm,direnv,secrets,sdkman}; do
   [[ -f "$DOTFILE" && "$DOTFILE" != *.work ]] && source "$DOTFILE"
 done
 
